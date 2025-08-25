@@ -1,0 +1,3 @@
+[submodule "kaleidoscope"]
+	path = kaleidoscope
+	url = git@github.com:Dygmalab/Kaleidoscope-Dygma.git
