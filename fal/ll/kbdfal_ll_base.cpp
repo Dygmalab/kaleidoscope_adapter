@@ -81,7 +81,7 @@ static kaleidoscope::plugin::LEDStalkerDefy stalkerDefy{};
 KALEIDOSCOPE_INIT_PLUGINS
 (
     EEPROMSettings,
-    EEPROMKeymap, FirmwareVersion, FocusSettingsCommand, FocusEEPROMCommand, /*Upgrade,*/DynamicSuperKeys,
+    EEPROMKeymap, FirmwareVersion, FocusSettingsCommand, FocusEEPROMCommand, Upgrade,DynamicSuperKeys,
     LEDControl, FocusLEDCommand,
     LEDPaletteThemeDefy, ColormapEffectDefy,
     LEDRainbowWaveEffectDefy, LEDRainbowEffectDefy, stalkerDefy, solidRedDefy,
