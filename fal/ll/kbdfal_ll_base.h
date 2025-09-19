@@ -21,8 +21,8 @@
  */
 
 
-#ifndef __KBDFAL_LL_KALEIDOSCOPE_H_
-#define __KBDFAL_LL_KALEIDOSCOPE_H_
+#ifndef __KBDFAL_LL_BASE_H_
+#define __KBDFAL_LL_BASE_H_
 
 #ifdef __cplusplus
 extern "C" {
@@ -31,10 +31,11 @@ extern "C" {
 #include "kbd_base.h"
 
 extern result_t kbdfal_ll_base_init( void );
+extern result_t kbdfal_ll_base_kbdif_set( kbdif_t * p_kbdif );
 
 #ifdef __cplusplus
 }
 #endif
 
 
-#endif /* __KBDFAL_LL_KALEIDOSCOPE_H_ */
+#endif /* __KBDFAL_LL_BASE_H_ */

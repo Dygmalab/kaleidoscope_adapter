@@ -19,6 +19,7 @@
  */
 
 #include "kbdfal_ll_base.h"
+#include "KbdInterface.h"
 
 
 // Kaleidoscope
@@ -90,7 +91,9 @@ KALEIDOSCOPE_INIT_PLUGINS
     /*SideFlash,*/ Focus, MouseKeys, OneShot, LayerFocus,
     HostPowerManagement,Battery,
     /*BLE*/
-    RadioManager, _BleManager
+    RadioManager, _BleManager,
+    /*Keyboard API interface*/
+    KbdInterface
 );
 
 result_t kbdfal_ll_base_init( void )
@@ -98,4 +101,9 @@ result_t kbdfal_ll_base_init( void )
     Kaleidoscope.setup();
 
     return RESULT_OK;
+}
+
+result_t kbdfal_ll_base_kbdif_set( kbdif_t * p_kbdif )
+{
+    return KbdInterface.kbdifRegister( p_kbdif );
 }
