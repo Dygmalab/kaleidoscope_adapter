@@ -60,6 +60,11 @@ namespace plugin
         kbdapi_key.col = key_addr.col();
         kbdapi_key.row = key_addr.row();
 
+        kbdapi_key.is_pressed = keyIsPressed(keyState);
+        kbdapi_key.was_pressed = keyWasPressed(keyState);
+        kbdapi_key.toggled_on = keyToggledOn(keyState);
+        kbdapi_key.toggled_off = keyToggledOff(keyState);
+
         event_result = kbdif_key_event( p_kbdif, &kbdapi_key );
 
         return EventHandlerResult_get( event_result );
