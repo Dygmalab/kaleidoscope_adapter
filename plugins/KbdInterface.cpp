@@ -19,23 +19,36 @@
  */
 
 #include "KbdInterface.h"
+#include "Kaleidoscope.h"
 
 namespace kaleidoscope
 {
 namespace plugin
 {
-    static inline kbdapi_key_type_t kbdapi_key_type_get( Key &mappedKey )
+    /* Key definitions */
+    typedef struct
     {
-        switch( mappedKey.getRaw() )
-        {
-            case ranges::BATTERY_LEVEL:
-                return KBDAPI_KEY_TYPE_BATTERY_LEVEL;
-            case ranges::BLUETOOTH_PAIRING:
-                return KBDAPI_KEY_TYPE_BLUETOOTH_PAIRING;
-            default:
-                return KBDAPI_KEY_TYPE_UNSPECIFIED;
-        }
-    }
+        uint16_t key;
+        kbdapi_key_type_t kbdapi_key;
+    } key_def_t;
+
+    static const key_def_t p_key_def_array[] =
+    {
+        { .key = HID_KEYBOARD_1_AND_EXCLAMATION_POINT,  .kbdapi_key = KBDAPI_KEY_TYPE_KBD_1_AND_EXCLAMATION_POINT },
+        { .key = HID_KEYBOARD_2_AND_AT,                 .kbdapi_key = KBDAPI_KEY_TYPE_KBD_2_AND_AT },
+        { .key = HID_KEYBOARD_3_AND_POUND,              .kbdapi_key = KBDAPI_KEY_TYPE_KBD_3_AND_POUND },
+        { .key = HID_KEYBOARD_4_AND_DOLLAR,             .kbdapi_key = KBDAPI_KEY_TYPE_KBD_4_AND_DOLLAR },
+        { .key = HID_KEYBOARD_5_AND_PERCENT,            .kbdapi_key = KBDAPI_KEY_TYPE_KBD_5_AND_PERCENT },
+        { .key = HID_KEYBOARD_6_AND_CARAT,              .kbdapi_key = KBDAPI_KEY_TYPE_KBD_6_AND_CARAT },
+        { .key = HID_KEYBOARD_7_AND_AMPERSAND,          .kbdapi_key = KBDAPI_KEY_TYPE_KBD_7_AND_AMPERSAND },
+        { .key = HID_KEYBOARD_8_AND_ASTERISK,           .kbdapi_key = KBDAPI_KEY_TYPE_KBD_8_AND_ASTERISK },
+        { .key = HID_KEYBOARD_9_AND_LEFT_PAREN,         .kbdapi_key = KBDAPI_KEY_TYPE_KBD_9_AND_LEFT_PAREN },
+        { .key = HID_KEYBOARD_0_AND_RIGHT_PAREN,        .kbdapi_key = KBDAPI_KEY_TYPE_KBD_0_AND_RIGHT_PAREN },
+
+        { .key = ranges::BATTERY_LEVEL,                 .kbdapi_key = KBDAPI_KEY_TYPE_BATTERY_LEVEL },
+        { .key = ranges::BLUETOOTH_PAIRING,             .kbdapi_key = KBDAPI_KEY_TYPE_BLUETOOTH_PAIRING },
+    };
+    #define get_key_def( def, id ) _get_def( def, p_key_def_array, key_def_t, key, id )
 
     static inline EventHandlerResult EventHandlerResult_get( kbdapi_event_result_t event_result )
     {
@@ -55,8 +68,13 @@ namespace plugin
         kbdapi_key_t kbdapi_key;
         kbdapi_event_result_t event_result;
 
+        const key_def_t * p_key_def;
+
+        /* Get the key definition */
+        get_key_def( p_key_def, mappedKey.getRaw() );
+
         /* Populate Keyboard API key structure */
-        kbdapi_key.type = kbdapi_key_type_get( mappedKey );
+        kbdapi_key.type = ( p_key_def != NULL ) ? p_key_def->kbdapi_key : KBDAPI_KEY_TYPE_UNSPECIFIED;
         kbdapi_key.col = key_addr.col();
         kbdapi_key.row = key_addr.row();
 
