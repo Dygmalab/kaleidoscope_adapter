@@ -88,6 +88,15 @@ namespace plugin
         return EventHandlerResult_get( event_result );
     }
 
+    EventHandlerResult KbdInterface::onFocusEvent(const char * p_command)
+    {
+        kbdapi_event_result_t event_result;
+
+        event_result = kbdif_command_event( p_kbdif, p_command );
+
+        return EventHandlerResult_get( event_result );
+    }
+
     result_t KbdInterface::kbdifRegister( kbdif_t * p_kbdif )
     {
         this->p_kbdif = p_kbdif;
