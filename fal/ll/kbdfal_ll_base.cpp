@@ -89,9 +89,9 @@ KALEIDOSCOPE_INIT_PLUGINS
     solidGreenDefy, solidBlueDefy, solidWhiteDefy, solidBlackDefy, batteryStatus,ledBluetoothPairingDefy,
     IdleLEDsDefy,PersistentIdleDefyLEDs, KeyboardFocus, Qukeys, DynamicMacros,
     /*SideFlash,*/ Focus, MouseKeys, OneShot, LayerFocus,
-    HostPowerManagement,Battery,
+    HostPowerManagement,
     /*BLE*/
-    RadioManager, _BleManager,
+    RadioManager,
     /*Keyboard API interface*/
     KbdInterface
 );
