@@ -90,8 +90,6 @@ KALEIDOSCOPE_INIT_PLUGINS
     IdleLEDsDefy,PersistentIdleDefyLEDs, KeyboardFocus, Qukeys, DynamicMacros,
     /*SideFlash,*/ Focus, MouseKeys, OneShot, LayerFocus,
     HostPowerManagement,
-    /*BLE*/
-    RadioManager,
     /*Keyboard API interface*/
     KbdInterface
 );
