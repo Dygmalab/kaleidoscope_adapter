@@ -57,6 +57,9 @@ namespace plugin
             case KBDAPI_EVENT_RESULT_CONSUMED:
                 return EventHandlerResult::EVENT_CONSUMED;
 
+            case KBDAPI_EVENT_RESULT_ERROR:
+                return EventHandlerResult::ERROR;
+
             case KBDAPI_EVENT_RESULT_IGNORED:
             default:
                 return EventHandlerResult::OK;
