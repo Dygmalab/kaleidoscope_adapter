@@ -78,8 +78,11 @@ namespace plugin
 
         /* Populate Keyboard API key structure */
         kbdapi_key.type = ( p_key_def != NULL ) ? p_key_def->kbdapi_key : KBDAPI_KEY_TYPE_UNSPECIFIED;
-        kbdapi_key.col = key_addr.col();
-        kbdapi_key.row = key_addr.row();
+
+        /* Fill the key coordinates */
+        kbdapi_key.coord.is_valid = key_addr.isValid();
+        kbdapi_key.coord.col = key_addr.col();
+        kbdapi_key.coord.row = key_addr.row();
 
         kbdapi_key.is_pressed = keyIsPressed(keyState);
         kbdapi_key.was_pressed = keyWasPressed(keyState);
