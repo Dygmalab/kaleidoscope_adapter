@@ -85,6 +85,7 @@ namespace plugin
         kbdapi_key.was_pressed = keyWasPressed(keyState);
         kbdapi_key.toggled_on = keyToggledOn(keyState);
         kbdapi_key.toggled_off = keyToggledOff(keyState);
+        kbdapi_key.injected = ( keyState & INJECTED ) ? true : false;
 
         event_result = kbdif_key_event( p_kbdif, &kbdapi_key );
 
