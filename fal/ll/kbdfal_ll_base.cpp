@@ -55,8 +55,6 @@
 #include "LEDEffect-Stalker-Defy.h"
 // #include "DefaultColormap.h"
 
-#include "FirmwareVersion.h"
-
 #ifndef KALEIDOSCOPE_ADAPTER_KEYMAP_DEFAULT
 #error "Default Kaleidoscope Adapter Keymap is not specified"
 #endif /* KALEIDOSCOPE_ADAPTER_KEYMAP_DEFAULT */
@@ -78,7 +76,7 @@ static kaleidoscope::plugin::LEDStalkerDefy stalkerDefy{};
 KALEIDOSCOPE_INIT_PLUGINS
 (
     EEPROMSettings,
-    EEPROMKeymap, FirmwareVersion, FocusSettingsCommand, FocusEEPROMCommand, DynamicSuperKeys,
+    EEPROMKeymap, FocusSettingsCommand, FocusEEPROMCommand, DynamicSuperKeys,
     LEDControl, FocusLEDCommand,
     LEDPaletteThemeDefy, ColormapEffectDefy,
     LEDRainbowWaveEffectDefy, LEDRainbowEffectDefy, stalkerDefy, solidRedDefy,
