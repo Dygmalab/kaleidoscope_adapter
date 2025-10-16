@@ -20,6 +20,7 @@
 
 #include "KbdInterface.h"
 #include "Kaleidoscope.h"
+#include "LEDControlDygma.h"
 
 namespace kaleidoscope
 {
@@ -100,6 +101,17 @@ namespace plugin
         kbdapi_event_result_t event_result;
 
         event_result = kbdif_command_event( p_kbdif, p_command );
+
+        return EventHandlerResult_get( event_result );
+    }
+
+
+    EventHandlerResult KbdInterface::onLEDModeChange()
+    {
+        kbdapi_event_result_t event_result = KBDAPI_EVENT_RESULT_IGNORED;
+        kbdapi_led_effect_action_t led_effect_action = ::LEDControl.getCurrentAction();
+
+        event_result = kbdif_led_effect_change_event( p_kbdif, led_effect_action );
 
         return EventHandlerResult_get( event_result );
     }

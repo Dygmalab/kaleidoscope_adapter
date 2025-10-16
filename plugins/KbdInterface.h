@@ -38,6 +38,7 @@ class KbdInterface : public Plugin {
     /* Kaleidoscope plugin functions */
     EventHandlerResult onKeyswitchEvent(Key &mapped_Key, KeyAddr key_addr, uint8_t key_state);
     EventHandlerResult onFocusEvent(const char * p_command);
+    EventHandlerResult onLEDModeChange();
 
     /* The Interface functions */
     result_t kbdifRegister( kbdif_t * p_kbdif );
