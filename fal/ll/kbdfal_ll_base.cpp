@@ -21,7 +21,6 @@
 #include "kbdfal_ll_base.h"
 #include "KbdInterface.h"
 
-
 // Kaleidoscope
 //#include "Kaleidoscope-Colormap.h"
 #include "Kaleidoscope-DynamicMacros.h"
@@ -47,13 +46,6 @@
 // LED effects
 #include "Colormap-Defy.h"
 #include "LED-Palette-Theme-Defy.h"
-#include "LEDEffect-BatteryStatus-Defy.h"
-#include "LEDEffect-Bluetooth-Pairing-Defy.h"
-//#include "LEDEffect-Breathe-Defy.h"
-#include "LEDEffect-Rainbow-Defy.h"
-#include "LEDEffect-SolidColor-Defy.h"
-#include "LEDEffect-Stalker-Defy.h"
-// #include "DefaultColormap.h"
 
 #ifndef KALEIDOSCOPE_ADAPTER_KEYMAP_DEFAULT
 #error "Default Kaleidoscope Adapter Keymap is not specified"
@@ -65,13 +57,6 @@ KEYMAPS
 );
 
 // kaleidoscope::plugin::EEPROMPadding JointPadding(8);
-static kaleidoscope::plugin::LEDSolidColorDefy solidRedDefy(255, 0, 0, 0);
-static kaleidoscope::plugin::LEDSolidColorDefy solidGreenDefy(0, 255, 0, 0);
-static kaleidoscope::plugin::LEDSolidColorDefy solidBlueDefy(0, 0, 255, 0);
-static kaleidoscope::plugin::LEDSolidColorDefy solidWhiteDefy(0, 0, 0, 255);
-static kaleidoscope::plugin::LEDSolidColorDefy solidBlackDefy(0, 0, 0, 0);
-static kaleidoscope::plugin::LEDBatteryStatusDefy batteryStatus{};
-static kaleidoscope::plugin::LEDStalkerDefy stalkerDefy{};
 
 KALEIDOSCOPE_INIT_PLUGINS
 (
@@ -79,8 +64,6 @@ KALEIDOSCOPE_INIT_PLUGINS
     EEPROMKeymap, FocusSettingsCommand, FocusEEPROMCommand, DynamicSuperKeys,
     LEDControl, FocusLEDCommand,
     LEDPaletteThemeDefy, ColormapEffectDefy,
-    LEDRainbowWaveEffectDefy, LEDRainbowEffectDefy, stalkerDefy, solidRedDefy,
-    solidGreenDefy, solidBlueDefy, solidWhiteDefy, solidBlackDefy, batteryStatus,ledBluetoothPairingDefy,
     IdleLEDsDefy,PersistentIdleDefyLEDs, KeyboardFocus, Qukeys, DynamicMacros,
     /*SideFlash,*/ Focus, MouseKeys, OneShot, LayerFocus,
     HostPowerManagement,
@@ -97,5 +80,11 @@ result_t kbdfal_ll_base_init( void )
 
 result_t kbdfal_ll_base_kbdif_set( kbdif_t * p_kbdif )
 {
-    return KbdInterface.kbdifRegister( p_kbdif );
+    result_t result = RESULT_ERR;
+
+    result = KbdInterface.kbdifRegister( p_kbdif );
+    EXIT_IF_ERR( result, "KbdInterface.kbdifRegister failed" );
+
+_EXIT:
+    return result;
 }
