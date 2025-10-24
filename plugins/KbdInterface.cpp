@@ -105,6 +105,15 @@ namespace plugin
         return EventHandlerResult_get( event_result );
     }
 
+    EventHandlerResult KbdInterface::onLayerChange()
+    {
+        kbdapi_event_result_t event_result = KBDAPI_EVENT_RESULT_IGNORED;
+        kbdapi_led_layer_id_t layer_id = Layer.mostRecent();
+
+        event_result = kbdif_led_layer_change_event( p_kbdif, layer_id );
+
+        return EventHandlerResult_get( event_result );
+    }
 
     EventHandlerResult KbdInterface::onLEDModeChange()
     {
