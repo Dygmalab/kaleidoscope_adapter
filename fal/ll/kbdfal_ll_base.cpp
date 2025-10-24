@@ -60,8 +60,7 @@ KALEIDOSCOPE_INIT_PLUGINS
 (
     EEPROMSettings,
     EEPROMKeymap, FocusSettingsCommand, FocusEEPROMCommand, DynamicSuperKeys,
-    LEDControl, FocusLEDCommand,
-    LEDPaletteThemeDefy,
+    LEDControl, LEDPaletteThemeDefy,
     IdleLEDsDefy,PersistentIdleDefyLEDs, KeyboardFocus, Qukeys, DynamicMacros,
     /*SideFlash,*/ Focus, MouseKeys, OneShot, LayerFocus,
     HostPowerManagement,

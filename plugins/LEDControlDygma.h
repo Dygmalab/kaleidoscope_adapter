@@ -161,19 +161,8 @@ class LEDControl : public kaleidoscope::Plugin
     static void hook_trigger( kbdapi_led_effect_action_t action );
 };
 
-class FocusLEDCommand : public Plugin
-{
-  public:
-    FocusLEDCommand()
-    {
-    }
-
-    EventHandlerResult onFocusEvent(const char *command);
-};
-
 } // namespace plugin
 
 } // namespace kaleidoscope
 
 extern kaleidoscope::plugin::LEDControl LEDControl;
-extern kaleidoscope::plugin::FocusLEDCommand FocusLEDCommand;
