@@ -15,7 +15,6 @@
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "Colormap-Defy.h"
 #include "EEPROM-Settings.h"
 #include "IdleLEDsDefy.h"
 #include "Kaleidoscope-FocusSerial.h"
@@ -227,7 +226,6 @@ kaleidoscope::EventHandlerResult LEDControl::onSetup()
         Runtime.storage().commit();
     }
     Runtime.storage().get(settings_base_, fade_effect);
-    ::ColormapEffectDefy.setFadein(fade_effect);
     set_all_leds_to({0, 0, 0});
 
 #warning "What is the setupPersistentLEDModes for?"
@@ -474,7 +472,6 @@ EventHandlerResult FocusLEDCommand::onFocusEvent(const char *command)
 
                 ::Focus.read(fade_ug_effect);
                 ::LEDControl.activateFadeUG(fade_ug_effect);
-                ::ColormapEffectDefy.setFadein(fade_ug_effect);
                 Runtime.storage().put(LEDControl::settings_base_, fade_ug_effect);
                 Runtime.storage().commit();
             }

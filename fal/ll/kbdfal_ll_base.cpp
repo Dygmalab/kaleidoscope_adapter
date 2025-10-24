@@ -22,7 +22,6 @@
 #include "KbdInterface.h"
 
 // Kaleidoscope
-//#include "Kaleidoscope-Colormap.h"
 #include "Kaleidoscope-DynamicMacros.h"
 #include "Kaleidoscope-DynamicSuperKeys.h"
 #include "Kaleidoscope-EEPROM-Keymap.h"
@@ -44,7 +43,6 @@
 // #include "LED-CapsLockLight.h"
 
 // LED effects
-#include "Colormap-Defy.h"
 #include "LED-Palette-Theme-Defy.h"
 
 #ifndef KALEIDOSCOPE_ADAPTER_KEYMAP_DEFAULT
@@ -63,7 +61,7 @@ KALEIDOSCOPE_INIT_PLUGINS
     EEPROMSettings,
     EEPROMKeymap, FocusSettingsCommand, FocusEEPROMCommand, DynamicSuperKeys,
     LEDControl, FocusLEDCommand,
-    LEDPaletteThemeDefy, ColormapEffectDefy,
+    LEDPaletteThemeDefy,
     IdleLEDsDefy,PersistentIdleDefyLEDs, KeyboardFocus, Qukeys, DynamicMacros,
     /*SideFlash,*/ Focus, MouseKeys, OneShot, LayerFocus,
     HostPowerManagement,
