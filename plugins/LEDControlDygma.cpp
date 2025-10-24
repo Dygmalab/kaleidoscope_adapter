@@ -40,7 +40,7 @@ namespace plugin
 
 uint16_t LEDControl::settings_base_ = 0;
 //static constexpr uint8_t uninitialized_mode_id = 255;
-uint8_t LEDControl::fade_effect = 0;
+//uint8_t LEDControl::fade_effect = 0;
 //uint8_t LEDControl::mode_id = uninitialized_mode_id;
 //uint8_t LEDControl::num_led_modes_ = LEDModeManager::numLEDModes();
 //LEDMode *LEDControl::cur_led_mode_ = nullptr;
@@ -215,19 +215,33 @@ void LEDControl::syncLeds(void)
     Runtime.device().syncLeds();
 }
 
+void LEDControl::fade_effect_save( fade_effect_t fade_is_enabled )
+{
+    Runtime.storage().put(settings_base_, fade_is_enabled );
+    Runtime.storage().commit();
+}
+
+LEDControl::fade_effect_t LEDControl::fade_effect_load( void )
+{
+    fade_effect_t fade_is_enabled;
+
+    Runtime.storage().get(settings_base_, fade_is_enabled);
+
+    return fade_is_enabled;
+}
+
 kaleidoscope::EventHandlerResult LEDControl::onSetup()
 {
-    settings_base_ = kaleidoscope::plugin::EEPROMSettings::requestSlice(sizeof(fade_effect));
+    LEDControl::fade_effect_t fade_is_enabled;
+    settings_base_ = kaleidoscope::plugin::EEPROMSettings::requestSlice(sizeof(LEDControl::fade_effect_t));
 
-    Runtime.storage().get(settings_base_, fade_effect);
+    Runtime.storage().get(settings_base_, fade_is_enabled);
     // For now lest think that if one block is invalid restart everything
-    if (fade_effect == 0xFF)
+    if (fade_is_enabled == 0xFF)
     {
-        fade_effect = 0;
-        Runtime.storage().put(settings_base_, fade_effect);
-        Runtime.storage().commit();
+        fade_effect_save( 0 );
     }
-    Runtime.storage().get(settings_base_, fade_effect);
+
     set_all_leds_to({0, 0, 0});
 
 #warning "What is the setupPersistentLEDModes for?"

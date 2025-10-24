@@ -38,6 +38,10 @@ class LEDMode;
 class LEDControl : public kaleidoscope::Plugin
 {
   public:
+#warning "Temporary fade effect type"
+    typedef uint8_t fade_effect_t;
+
+  public:
     LEDControl(void);
 //    static void set_force_mode(bool);
 //    static void next_mode(void);
@@ -138,14 +142,16 @@ class LEDControl : public kaleidoscope::Plugin
         return Runtime.device().ledDriver().getBrightnessUGWireless();
     }
 
-    static void activateFadeUG(uint8_t activate_fade_effect){
-        fade_effect = activate_fade_effect;
+#warning "These will be obsolete when the EEPROM configuration is solved"
+    static void fade_effect_save( fade_effect_t fade_is_enabled );
+    static LEDControl::fade_effect_t fade_effect_load( void );
 
-
-    }
-    static uint8_t FadeUGIsActivated(){
-        return fade_effect;
-    }
+//    static void activateFadeUG(uint8_t activate_fade_effect){
+//        fade_effect = activate_fade_effect;
+//    }
+//    static uint8_t FadeUGIsActivated(){
+//        return fade_effect;
+//    }
     static uint16_t settings_base_;
   private:
     //static uint16_t syncTimer;
@@ -155,7 +161,7 @@ class LEDControl : public kaleidoscope::Plugin
     static bool enabled_;
     static Key pending_next_prev_key_;
     static bool force;
-    static uint8_t fade_effect;
+    //static uint8_t fade_effect;
     static kbdapi_led_effect_action_t led_effect_action;
 
     static void hook_trigger( kbdapi_led_effect_action_t action );
