@@ -73,7 +73,7 @@ class LEDControl : public kaleidoscope::Plugin
 //        return static_cast<LEDMode__ *>(cur_led_mode_);
 //    }
 
-    static void refreshAll();
+//    static void refreshAll();
 
     static void setCrgbAt(uint8_t led_index, cRGB crgb);
     static void setCrgbAt(KeyAddr key_addr, cRGB color);
@@ -81,8 +81,8 @@ class LEDControl : public kaleidoscope::Plugin
     static cRGB getCrgbAt(KeyAddr key_addr);
     static void syncLeds(void);
 
-    static void set_all_leds_to(uint8_t r, uint8_t g, uint8_t b);
-    static void set_all_leds_to(cRGB color);
+//    static void set_all_leds_to(uint8_t r, uint8_t g, uint8_t b);
+//    static void set_all_leds_to(cRGB color);
 
     // We restict activate to LEDModeInterface to make sure that
     // a compiler error is thrown when activate() is accidentally

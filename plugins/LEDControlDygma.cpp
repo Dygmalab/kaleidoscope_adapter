@@ -148,9 +148,9 @@ void LEDControl::prev_mode(void)
 void LEDControl::disable()
 {
 #warning "Think about this"
-    set_all_leds_to(CRGB(0, 0, 0));
+//    set_all_leds_to(CRGB(0, 0, 0));
     enabled_ = false;
-    Runtime.device().syncLeds();
+//    Runtime.device().syncLeds();
 
     hook_trigger( KBDAPI_LED_EFFECT_ACTION_DISABLE );
 }
@@ -158,8 +158,8 @@ void LEDControl::disable()
 void LEDControl::enable()
 {
     enabled_ = true;
-    refreshAll();
-    Runtime.device().syncLeds();
+//    refreshAll();
+//    Runtime.device().syncLeds();
 
     hook_trigger( KBDAPI_LED_EFFECT_ACTION_ENABLE );
 }
@@ -169,24 +169,24 @@ kbdapi_led_effect_action_t LEDControl::getCurrentAction(void)
     return led_effect_action;
 }
 
-void LEDControl::set_all_leds_to(uint8_t r, uint8_t g, uint8_t b)
-{
-    if (!Runtime.has_leds) return;
-
-    cRGB color;
-    color.r = r;
-    color.g = g;
-    color.b = b;
-    set_all_leds_to(color);
-}
-
-void LEDControl::set_all_leds_to(cRGB color)
-{
-    for (auto led_index : Runtime.device().LEDs().all())
-    {
-        setCrgbAt(led_index.offset(), color);
-    }
-}
+//void LEDControl::set_all_leds_to(uint8_t r, uint8_t g, uint8_t b)
+//{
+//    if (!Runtime.has_leds) return;
+//
+//    cRGB color;
+//    color.r = r;
+//    color.g = g;
+//    color.b = b;
+//    set_all_leds_to(color);
+//}
+//
+//void LEDControl::set_all_leds_to(cRGB color)
+//{
+//    for (auto led_index : Runtime.device().LEDs().all())
+//    {
+//        setCrgbAt(led_index.offset(), color);
+//    }
+//}
 
 void LEDControl::setCrgbAt(uint8_t led_index, cRGB crgb)
 {
@@ -242,7 +242,7 @@ kaleidoscope::EventHandlerResult LEDControl::onSetup()
         fade_effect_save( 0 );
     }
 
-    set_all_leds_to({0, 0, 0});
+//    set_all_leds_to({0, 0, 0});
 
 #warning "What is the setupPersistentLEDModes for?"
 //    LEDModeManager::setupPersistentLEDModes();
@@ -326,21 +326,21 @@ kaleidoscope::EventHandlerResult LEDControl::beforeReportingState(void)
     return kaleidoscope::EventHandlerResult::OK;
 }
 
-void LEDControl::refreshAll()
-{
-#warning "refreshAll replacement needed"
-
-    if (!Runtime.has_leds) return;
-
-//    if (mode_id < num_led_modes_ - user_effects)
-//    {
-//        if (!enabled_) return;
-//    }
+//void LEDControl::refreshAll()
+//{
+//#warning "refreshAll replacement needed"
 //
-//    set_all_leds_to({0, 0, 0});
+//    if (!Runtime.has_leds) return;
 //
-//    if (cur_led_mode_ != nullptr) cur_led_mode_->onActivate();
-}
+////    if (mode_id < num_led_modes_ - user_effects)
+////    {
+////        if (!enabled_) return;
+////    }
+////
+////    set_all_leds_to({0, 0, 0});
+////
+////    if (cur_led_mode_ != nullptr) cur_led_mode_->onActivate();
+//}
 
 } // namespace plugin
 } // namespace kaleidoscope
