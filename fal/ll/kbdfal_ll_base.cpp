@@ -20,6 +20,7 @@
 
 #include "kbdfal_ll_base.h"
 #include "KbdInterface.h"
+#include "LEDControlDygma.h"
 
 // Kaleidoscope
 #include "Kaleidoscope-DynamicMacros.h"
@@ -42,9 +43,6 @@
 
 // #include "LED-CapsLockLight.h"
 
-// LED effects
-#include "LED-Palette-Theme-Defy.h"
-
 #ifndef KALEIDOSCOPE_ADAPTER_KEYMAP_DEFAULT
 #error "Default Kaleidoscope Adapter Keymap is not specified"
 #endif /* KALEIDOSCOPE_ADAPTER_KEYMAP_DEFAULT */
@@ -60,7 +58,7 @@ KALEIDOSCOPE_INIT_PLUGINS
 (
     EEPROMSettings,
     EEPROMKeymap, FocusSettingsCommand, FocusEEPROMCommand, DynamicSuperKeys,
-    LEDControl, LEDPaletteThemeDefy,
+    LEDControl,
     IdleLEDsDefy,PersistentIdleDefyLEDs, KeyboardFocus, Qukeys, DynamicMacros,
     /*SideFlash,*/ Focus, MouseKeys, OneShot, LayerFocus,
     HostPowerManagement,
