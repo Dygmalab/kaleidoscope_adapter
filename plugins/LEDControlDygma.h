@@ -46,7 +46,7 @@ class LEDControl : public kaleidoscope::Plugin
 //    static void set_force_mode(bool);
 //    static void next_mode(void);
 //    static void prev_mode(void);
-    static void setup(void);
+//    static void setup(void);
 //    static void update(void)
 //    {
 //        if (!Runtime.has_leds) return;
@@ -83,12 +83,12 @@ class LEDControl : public kaleidoscope::Plugin
 
 //    static void set_all_leds_to(uint8_t r, uint8_t g, uint8_t b);
 //    static void set_all_leds_to(cRGB color);
-
-    // We restict activate to LEDModeInterface to make sure that
-    // a compiler error is thrown when activate() is accidentally
-    // applied to a non-LED mode plugin.
-    //
-    static void activate(LEDModeInterface *plugin);
+//
+//    // We restict activate to LEDModeInterface to make sure that
+//    // a compiler error is thrown when activate() is accidentally
+//    // applied to a non-LED mode plugin.
+//    //
+//    static void activate(LEDModeInterface *plugin);
 
 //    static uint8_t syncDelay;
 
@@ -96,8 +96,6 @@ class LEDControl : public kaleidoscope::Plugin
     kaleidoscope::EventHandlerResult onKeyswitchEvent(Key &mappedKey, KeyAddr key_addr, uint8_t keyState);
     kaleidoscope::EventHandlerResult beforeReportingState();
 
-    static void next_mode(void);
-    static void prev_mode(void);
     static void disable();
     static void enable();
     static bool isEnabled()
@@ -152,8 +150,9 @@ class LEDControl : public kaleidoscope::Plugin
 //    static uint8_t FadeUGIsActivated(){
 //        return fade_effect;
 //    }
-    static uint16_t settings_base_;
+
   private:
+    static uint16_t settings_base_;
     //static uint16_t syncTimer;
     //static uint8_t mode_id;
     //static uint8_t num_led_modes_;
@@ -164,6 +163,8 @@ class LEDControl : public kaleidoscope::Plugin
     //static uint8_t fade_effect;
     static kbdapi_led_effect_action_t led_effect_action;
 
+    static void next_mode(void);
+    static void prev_mode(void);
     static void hook_trigger( kbdapi_led_effect_action_t action );
 };
 
