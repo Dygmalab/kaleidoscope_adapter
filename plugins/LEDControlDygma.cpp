@@ -48,8 +48,8 @@ uint16_t LEDControl::settings_base_ = 0;
 //uint16_t LEDControl::syncTimer = 0;
 bool LEDControl::enabled_ = true;
 Key LEDControl::pending_next_prev_key_ = Key_NoKey;
-uint8_t user_effects = 3; // Battery status, advertising mode.
-bool LEDControl::force = false;
+//uint8_t user_effects = 3; // Battery status, advertising mode.
+//bool LEDControl::force = false;
 
 kbdapi_led_effect_action_t LEDControl::led_effect_action = KBDAPI_LED_EFFECT_ACTION_NONE;
 
@@ -188,32 +188,32 @@ kbdapi_led_effect_action_t LEDControl::getCurrentAction(void)
 //    }
 //}
 
-void LEDControl::setCrgbAt(uint8_t led_index, cRGB crgb)
-{
-    Runtime.device().setCrgbAt(led_index, crgb);
-}
+//void LEDControl::setCrgbAt(uint8_t led_index, cRGB crgb)
+//{
+//    Runtime.device().setCrgbAt(led_index, crgb);
+//}
+//
+//void LEDControl::setCrgbAt(KeyAddr key_addr, cRGB color)
+//{
+//    Runtime.device().setCrgbAt(key_addr, color);
+//}
+//
+//cRGB LEDControl::getCrgbAt(uint8_t led_index)
+//{
+//    return Runtime.device().getCrgbAt(led_index);
+//}
+//cRGB LEDControl::getCrgbAt(KeyAddr key_addr)
+//{
+//    return Runtime.device().getCrgbAt(Runtime.device().getLedIndex(key_addr));
+//}
 
-void LEDControl::setCrgbAt(KeyAddr key_addr, cRGB color)
-{
-    Runtime.device().setCrgbAt(key_addr, color);
-}
-
-cRGB LEDControl::getCrgbAt(uint8_t led_index)
-{
-    return Runtime.device().getCrgbAt(led_index);
-}
-cRGB LEDControl::getCrgbAt(KeyAddr key_addr)
-{
-    return Runtime.device().getCrgbAt(Runtime.device().getLedIndex(key_addr));
-}
-
-void LEDControl::syncLeds(void)
-{
-    if (force) return;
-    if (!enabled_) return;
-
-    Runtime.device().syncLeds();
-}
+//void LEDControl::syncLeds(void)
+//{
+//    if (force) return;
+//    if (!enabled_) return;
+//
+//    Runtime.device().syncLeds();
+//}
 
 void LEDControl::fade_effect_save( fade_effect_t fade_is_enabled )
 {

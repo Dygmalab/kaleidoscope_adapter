@@ -75,11 +75,11 @@ class LEDControl : public kaleidoscope::Plugin
 
 //    static void refreshAll();
 
-    static void setCrgbAt(uint8_t led_index, cRGB crgb);
-    static void setCrgbAt(KeyAddr key_addr, cRGB color);
-    static cRGB getCrgbAt(uint8_t led_index);
-    static cRGB getCrgbAt(KeyAddr key_addr);
-    static void syncLeds(void);
+//    static void setCrgbAt(uint8_t led_index, cRGB crgb);
+//    static void setCrgbAt(KeyAddr key_addr, cRGB color);
+//    static cRGB getCrgbAt(uint8_t led_index);
+//    static cRGB getCrgbAt(KeyAddr key_addr);
+//    static void syncLeds(void);
 
 //    static void set_all_leds_to(uint8_t r, uint8_t g, uint8_t b);
 //    static void set_all_leds_to(cRGB color);
@@ -159,7 +159,7 @@ class LEDControl : public kaleidoscope::Plugin
     //static LEDMode *cur_led_mode_;
     static bool enabled_;
     static Key pending_next_prev_key_;
-    static bool force;
+    //static bool force;
     //static uint8_t fade_effect;
     static kbdapi_led_effect_action_t led_effect_action;
 
