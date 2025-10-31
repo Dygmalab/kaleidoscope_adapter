@@ -16,7 +16,8 @@
  */
 
 #include "EEPROM-Settings.h"
-#include "IdleLEDsDefy.h"
+//#include "IdleLEDsDefy.h"
+#include "IdleLEDsDygma.h"
 #include "Kaleidoscope-FocusSerial.h"
 //#include "Kaleidoscope-LEDControl.h"
 #include "kaleidoscope/keyswitch_state.h"
@@ -30,7 +31,7 @@ using namespace kaleidoscope::internal; // NOLINT(build/namespaces)
 
 void keypress_handle(void)
 {
-    IdleLEDsDefy.reset_timers();
+    IdleLEDsDygma.reset_timers();
 }
 
 namespace kaleidoscope

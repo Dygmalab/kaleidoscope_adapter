@@ -27,7 +27,8 @@
 #include "Kaleidoscope-DynamicSuperKeys.h"
 #include "Kaleidoscope-EEPROM-Keymap.h"
 #include "Kaleidoscope-FocusSerial.h"
-#include "Kaleidoscope-IdleLEDsDefy.h"
+//#include "Kaleidoscope-IdleLEDsDefy.h"
+#include "IdleLEDsDygma.h"
 #include "Kaleidoscope-LayerFocus.h"
 //#include "Kaleidoscope-MagicCombo.h"
 #include "Kaleidoscope-MouseKeys.h"
@@ -59,7 +60,7 @@ KALEIDOSCOPE_INIT_PLUGINS
     EEPROMSettings,
     EEPROMKeymap, FocusSettingsCommand, FocusEEPROMCommand, DynamicSuperKeys,
     LEDControl,
-    IdleLEDsDefy,PersistentIdleDefyLEDs, KeyboardFocus, Qukeys, DynamicMacros,
+    IdleLEDsDygma,PersistentIdleDygmaLEDs, KeyboardFocus, Qukeys, DynamicMacros,
     /*SideFlash,*/ Focus, MouseKeys, OneShot, LayerFocus,
     HostPowerManagement,
     /*Keyboard API interface*/
