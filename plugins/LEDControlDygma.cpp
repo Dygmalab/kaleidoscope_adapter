@@ -17,7 +17,7 @@
 
 #include "EEPROM-Settings.h"
 //#include "IdleLEDsDefy.h"
-#include "IdleLEDsDygma.h"
+//#include "IdleLEDsDygma.h"
 #include "Kaleidoscope-FocusSerial.h"
 //#include "Kaleidoscope-LEDControl.h"
 #include "kaleidoscope/keyswitch_state.h"
@@ -29,10 +29,10 @@
 
 using namespace kaleidoscope::internal; // NOLINT(build/namespaces)
 
-void keypress_handle(void)
-{
-    IdleLEDsDygma.reset_timers();
-}
+//void keypress_handle(void)
+//{
+//    IdleLEDsDygma.reset_timers();
+//}
 
 namespace kaleidoscope
 {
@@ -276,7 +276,7 @@ kaleidoscope::EventHandlerResult LEDControl::onKeyswitchEvent(Key &mappedKey, Ke
 
     if (keyToggledOn(keyState))
     {
-        keypress_handle();
+//        keypress_handle();
 
         if (mappedKey == Key_LEDEffectNext || mappedKey == Key_LEDEffectPrevious)
         {
