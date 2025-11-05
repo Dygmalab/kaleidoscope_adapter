@@ -35,126 +35,126 @@ namespace plugin
 {
 
 //Deep sleep flag
-bool IdleLEDsDygma::sleep_ = false;
+//bool IdleLEDsDygma::sleep_ = false;
 IdleLEDsDygma::IdleTime IdleLEDsDygma::Power_save;
-uint32_t IdleLEDsDygma::start_time_wired = 0;
-uint32_t IdleLEDsDygma::start_time_wireless = 0;
-uint32_t IdleLEDsDygma::start_time_true_sleep = 0;
-
-bool IdleLEDsDygma::idle_ = false; // Initialize with false
+//uint32_t IdleLEDsDygma::start_time_wired = 0;
+//uint32_t IdleLEDsDygma::start_time_wireless = 0;
+//uint32_t IdleLEDsDygma::start_time_true_sleep = 0;
+//
+//bool IdleLEDsDygma::idle_ = false; // Initialize with false
 bool IdleLEDsDygma::new_connection_ = false; // Initialize with false
 
-bool was_wired = false;
+//bool was_wired = false;
 
-uint32_t IdleLEDsDygma::ms_to_seconds(uint32_t time_in_ms)
-{
-    return time_in_ms / 1000;
-}
+//uint32_t IdleLEDsDygma::ms_to_seconds(uint32_t time_in_ms)
+//{
+//    return time_in_ms / 1000;
+//}
 
-void IdleLEDsDygma::reset_timers()
-{
-    start_time_wired = Runtime.millisAtCycleStart();
-    start_time_wireless = Runtime.millisAtCycleStart();
-    start_time_true_sleep = Runtime.millisAtCycleStart();
-    sleep_ = false;
-}
+//void IdleLEDsDygma::reset_timers()
+//{
+//    start_time_wired = Runtime.millisAtCycleStart();
+//    start_time_wireless = Runtime.millisAtCycleStart();
+//    start_time_true_sleep = Runtime.millisAtCycleStart();
+//    sleep_ = false;
+//}
 
 void IdleLEDsDygma::new_connection_set()
 {
     new_connection_ = true;
 }
 
-EventHandlerResult IdleLEDsDygma::beforeEachCycle()
-{
-    auto const &keyScanner = Runtime.device().keyScanner();
-    auto isDygmaLeftWired = keyScanner.leftSideWiredConnection();
-    auto isDygmaRightWired = keyScanner.rightSideWiredConnection();
+//EventHandlerResult IdleLEDsDygma::beforeEachCycle()
+//{
+//    auto const &keyScanner = Runtime.device().keyScanner();
+//    auto isDygmaLeftWired = keyScanner.leftSideWiredConnection();
+//    auto isDygmaRightWired = keyScanner.rightSideWiredConnection();
+//
+//    if (isDygmaLeftWired &&
+//        isDygmaRightWired &&
+//        !ble_innited())
+//    {
+//        if( !was_wired )
+//        {
+//            was_wired = true;
+//        }
+//
+//        if (Power_save.leds_off_usb_idle_t_ms != 0 &&
+//            ::LEDControl.isEnabled() &&
+//            Runtime.hasTimeExpired(start_time_wired, Power_save.leds_off_usb_idle_t_ms))
+//        {
+//            ::LEDControl.disable();
+//            sleep_ = false;
+//            idle_ = true;
+//        }
+//
+//    }
+//    else
+//    {
+//        /* This block is to fix the case when the keyboard was wired mode, the timer expires and me change to wireless mode, the sleep mode will be
+//         * activated instanly.
+//         * For that reason we need to check if the keyboard was just connected  we need to reset the SLEEP timer.
+//         * */
+//        if( was_wired )
+//        {
+//            was_wired = false;
+//            start_time_true_sleep = Runtime.millisAtCycleStart();
+//        }
+//
+//        if (Power_save.leds_off_ble_idle_t_ms != 0
+//            && ::LEDControl.isEnabled() &&
+//            Runtime.hasTimeExpired(start_time_wireless, Power_save.leds_off_ble_idle_t_ms))
+//        {
+//            ::LEDControl.disable();
+//            idle_ = true;
+//            sleep_ = false;
+//            start_time_true_sleep = Runtime.millisAtCycleStart();
+//        }
+//
+//        if (Power_save.activate_keybsides_sleep &&
+//            !::LEDControl.isEnabled() &&
+//            !sleep_ &&
+//            Runtime.hasTimeExpired(start_time_true_sleep, Power_save.sides_sleep_idle_t_ms))
+//        {
+//            Communications_protocol::Packet p{};
+//            p.header.command = Communications_protocol::SLEEP;
+//            Communications.sendPacket(p);
+//            sleep_ = true;
+//        }
+//    }
+//
+//
+//    return EventHandlerResult::OK;
+//}
 
-    if (isDygmaLeftWired &&
-        isDygmaRightWired &&
-        !ble_innited())
-    {
-        if( !was_wired )
-        {
-            was_wired = true;
-        }
-
-        if (Power_save.leds_off_usb_idle_t_ms != 0 &&
-            ::LEDControl.isEnabled() &&
-            Runtime.hasTimeExpired(start_time_wired, Power_save.leds_off_usb_idle_t_ms))
-        {
-            ::LEDControl.disable();
-            sleep_ = false;
-            idle_ = true;
-        }
-
-    }
-    else
-    {
-        /* This block is to fix the case when the keyboard was wired mode, the timer expires and me change to wireless mode, the sleep mode will be
-         * activated instanly.
-         * For that reason we need to check if the keyboard was just connected  we need to reset the SLEEP timer.
-         * */
-        if( was_wired )
-        {
-            was_wired = false;
-            start_time_true_sleep = Runtime.millisAtCycleStart();
-        }
-
-        if (Power_save.leds_off_ble_idle_t_ms != 0
-            && ::LEDControl.isEnabled() &&
-            Runtime.hasTimeExpired(start_time_wireless, Power_save.leds_off_ble_idle_t_ms))
-        {
-            ::LEDControl.disable();
-            idle_ = true;
-            sleep_ = false;
-            start_time_true_sleep = Runtime.millisAtCycleStart();
-        }
-
-        if (Power_save.activate_keybsides_sleep &&
-            !::LEDControl.isEnabled() &&
-            !sleep_ &&
-            Runtime.hasTimeExpired(start_time_true_sleep, Power_save.sides_sleep_idle_t_ms))
-        {
-            Communications_protocol::Packet p{};
-            p.header.command = Communications_protocol::SLEEP;
-            Communications.sendPacket(p);
-            sleep_ = true;
-        }
-    }
-
-
-    return EventHandlerResult::OK;
-}
-
-EventHandlerResult IdleLEDsDygma::onKeyswitchEvent(Key &mapped_key, KeyAddr key_addr, uint8_t key_state)
-{
-
-    if (idle_)
-    {
-        ::LEDControl.enable();
-        idle_ = false;
-    }
-    reset_timers();
-
-    return EventHandlerResult::OK;
-}
+//EventHandlerResult IdleLEDsDygma::onKeyswitchEvent(Key &mapped_key, KeyAddr key_addr, uint8_t key_state)
+//{
+//
+//    if (idle_)
+//    {
+//        ::LEDControl.enable();
+//        idle_ = false;
+//    }
+//    reset_timers();
+//
+//    return EventHandlerResult::OK;
+//}
 
 uint16_t PersistentIdleDygmaLEDs::settings_base_;
 
 EventHandlerResult PersistentIdleDygmaLEDs::onSetup()
 {
-    Communications.callbacks.bind(CONNECTED, (
-                                                 [this](const Packet &)
-                                                 {
-                                                     if( new_connection_ == true )
-                                                     {
-                                                         new_connection_ = false;
-                                                         reset_timers();
-                                                     }
-
-                                                     ::LEDControl.enable();
-                                                 }));
+//    Communications.callbacks.bind(CONNECTED, (
+//                                                 [this](const Packet &)
+//                                                 {
+//                                                     if( new_connection_ == true )
+//                                                     {
+//                                                         new_connection_ = false;
+//                                                         reset_timers();
+//                                                     }
+//
+//                                                     ::LEDControl.enable();
+//                                                 }));
 
     settings_base_ = ::EEPROMSettings.requestSlice(sizeof(IdleTime));
 

@@ -45,23 +45,23 @@ class IdleLEDsDygma : public kaleidoscope::Plugin
         static constexpr const uint32_t sides_sleep_idle_t_ms_default = 60000;    // 60.000 ms = 1 minutes
         
         static void save_power_save_settings(const IdleTime& data);
-        static uint32_t ms_to_seconds(uint32_t time_in_ms);
+//        static uint32_t ms_to_seconds(uint32_t time_in_ms);
 
-        void reset_timers();
+//        void reset_timers();
         void new_connection_set();
 
-        EventHandlerResult beforeEachCycle();
-        EventHandlerResult onKeyswitchEvent(Key &mapped_key, KeyAddr key_addr, uint8_t key_state);
+//        EventHandlerResult beforeEachCycle();
+//        EventHandlerResult onKeyswitchEvent(Key &mapped_key, KeyAddr key_addr, uint8_t key_state);
 
     private:
-        static bool idle_;
+//        static bool idle_;
 
     protected:
-        static uint32_t start_time_wired;
-        static uint32_t start_time_wireless;
-        static uint32_t start_time_true_sleep;
-        static uint32_t start_time_true_sleep_wired;
-        static bool sleep_;
+//        static uint32_t start_time_wired;
+//        static uint32_t start_time_wireless;
+//        static uint32_t start_time_true_sleep;
+//        static uint32_t start_time_true_sleep_wired;
+//        static bool sleep_;
         static bool new_connection_;
 };
 
