@@ -18,14 +18,11 @@
 #include "EEPROM-Settings.h"
 //#include "IdleLEDsDefy.h"
 //#include "IdleLEDsDygma.h"
-#include "Kaleidoscope-FocusSerial.h"
+//#include "Kaleidoscope-FocusSerial.h"
 //#include "Kaleidoscope-LEDControl.h"
 #include "kaleidoscope/keyswitch_state.h"
-#include "kaleidoscope_internal/LEDModeManager.h"
+//#include "kaleidoscope_internal/LEDModeManager.h"
 #include "LEDControlDygma.h"
-
-#warning "This is external module!"
-#include "LEDManager.h"
 
 using namespace kaleidoscope::internal; // NOLINT(build/namespaces)
 
@@ -47,7 +44,7 @@ uint16_t LEDControl::settings_base_ = 0;
 //LEDMode *LEDControl::cur_led_mode_ = nullptr;
 //uint8_t LEDControl::syncDelay = 32;
 //uint16_t LEDControl::syncTimer = 0;
-bool LEDControl::enabled_ = true;
+//bool LEDControl::enabled_ = true;
 Key LEDControl::pending_next_prev_key_ = Key_NoKey;
 //uint8_t user_effects = 3; // Battery status, advertising mode.
 //bool LEDControl::force = false;
@@ -136,34 +133,39 @@ void LEDControl::hook_trigger( kbdapi_led_effect_action_t action )
     led_effect_action = KBDAPI_LED_EFFECT_ACTION_NONE;
 }
 
-void LEDControl::next_mode(void)
+INLINE void LEDControl::next_mode(void)
 {
     hook_trigger( KBDAPI_LED_EFFECT_ACTION_NEXT );
 }
 
-void LEDControl::prev_mode(void)
+INLINE void LEDControl::prev_mode(void)
 {
     hook_trigger( KBDAPI_LED_EFFECT_ACTION_PREVIOUS );
 }
 
-void LEDControl::disable()
+INLINE void LEDControl::leds_toggle( void )
 {
-#warning "Think about this"
-//    set_all_leds_to(CRGB(0, 0, 0));
-    enabled_ = false;
-//    Runtime.device().syncLeds();
-
-    hook_trigger( KBDAPI_LED_EFFECT_ACTION_DISABLE );
+    hook_trigger( KBDAPI_LED_EFFECT_ACTION_TOGGLE );
 }
 
-void LEDControl::enable()
-{
-    enabled_ = true;
-//    refreshAll();
-//    Runtime.device().syncLeds();
-
-    hook_trigger( KBDAPI_LED_EFFECT_ACTION_ENABLE );
-}
+//void LEDControl::disable()
+//{
+//#warning "Think about this"
+////    set_all_leds_to(CRGB(0, 0, 0));
+//    enabled_ = false;
+////    Runtime.device().syncLeds();
+//
+//    hook_trigger( KBDAPI_LED_EFFECT_ACTION_DISABLE );
+//}
+//
+//void LEDControl::enable()
+//{
+//    enabled_ = true;
+////    refreshAll();
+////    Runtime.device().syncLeds();
+//
+//    hook_trigger( KBDAPI_LED_EFFECT_ACTION_ENABLE );
+//}
 
 kbdapi_led_effect_action_t LEDControl::getCurrentAction(void)
 {
@@ -286,10 +288,11 @@ kaleidoscope::EventHandlerResult LEDControl::onKeyswitchEvent(Key &mappedKey, Ke
         }
         else if (mappedKey == Key_LEDToggle)
         {
-            if (enabled_)
-                disable();
-            else
-                enable();
+//            if (enabled_)
+//                disable();
+//            else
+//                enable();
+            leds_toggle();
         }
     }
 
@@ -298,7 +301,7 @@ kaleidoscope::EventHandlerResult LEDControl::onKeyswitchEvent(Key &mappedKey, Ke
 
 kaleidoscope::EventHandlerResult LEDControl::beforeReportingState(void)
 {
-    if (!enabled_) return kaleidoscope::EventHandlerResult::OK;
+//    if (!enabled_) return kaleidoscope::EventHandlerResult::OK;
 
     if (pending_next_prev_key_ != Key_NoKey)
     {

@@ -96,12 +96,12 @@ class LEDControl : public kaleidoscope::Plugin
     kaleidoscope::EventHandlerResult onKeyswitchEvent(Key &mappedKey, KeyAddr key_addr, uint8_t keyState);
     kaleidoscope::EventHandlerResult beforeReportingState();
 
-    static void disable();
-    static void enable();
-    static bool isEnabled()
-    {
-        return enabled_;
-    }
+//    static void disable();
+//    static void enable();
+//    static bool isEnabled()
+//    {
+//        return enabled_;
+//    }
 
     static kbdapi_led_effect_action_t getCurrentAction(void);
 
@@ -157,14 +157,15 @@ class LEDControl : public kaleidoscope::Plugin
     //static uint8_t mode_id;
     //static uint8_t num_led_modes_;
     //static LEDMode *cur_led_mode_;
-    static bool enabled_;
+    //static bool enabled_;
     static Key pending_next_prev_key_;
     //static bool force;
     //static uint8_t fade_effect;
     static kbdapi_led_effect_action_t led_effect_action;
 
-    static void next_mode(void);
-    static void prev_mode(void);
+    static INLINE void next_mode(void);
+    static INLINE void prev_mode(void);
+    static INLINE void leds_toggle(void);
     static void hook_trigger( kbdapi_led_effect_action_t action );
 };
 
