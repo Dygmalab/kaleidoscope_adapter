@@ -42,7 +42,7 @@ IdleLEDsDygma::IdleTime IdleLEDsDygma::Power_save;
 //uint32_t IdleLEDsDygma::start_time_true_sleep = 0;
 //
 //bool IdleLEDsDygma::idle_ = false; // Initialize with false
-bool IdleLEDsDygma::new_connection_ = false; // Initialize with false
+//bool IdleLEDsDygma::new_connection_ = false; // Initialize with false
 
 //bool was_wired = false;
 
@@ -59,10 +59,10 @@ bool IdleLEDsDygma::new_connection_ = false; // Initialize with false
 //    sleep_ = false;
 //}
 
-void IdleLEDsDygma::new_connection_set()
-{
-    new_connection_ = true;
-}
+//void IdleLEDsDygma::new_connection_set()
+//{
+//    new_connection_ = true;
+//}
 
 //EventHandlerResult IdleLEDsDygma::beforeEachCycle()
 //{
