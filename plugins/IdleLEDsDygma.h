@@ -39,12 +39,12 @@ class IdleLEDsDygma : public kaleidoscope::Plugin
             uint32_t leds_off_ble_idle_t_ms;    // Power off time for LEDs, when the n2 is in BLE mode [ms].
         };
 
-        static IdleTime Power_save;
-        static constexpr const uint32_t leds_off_usb_idle_t_ms_default = 600000;  // 600.000 ms = 10 minutes
-        static constexpr const uint32_t leds_off_ble_idle_t_ms_default = 300000;  // 300.000 ms = 5 minutes
-        static constexpr const uint32_t sides_sleep_idle_t_ms_default = 60000;    // 60.000 ms = 1 minutes
+//        static IdleTime Power_save;
+//        static constexpr const uint32_t leds_off_usb_idle_t_ms_default = 600000;  // 600.000 ms = 10 minutes
+//        static constexpr const uint32_t leds_off_ble_idle_t_ms_default = 300000;  // 300.000 ms = 5 minutes
+//        static constexpr const uint32_t sides_sleep_idle_t_ms_default = 60000;    // 60.000 ms = 1 minutes
         
-        static void save_power_save_settings(const IdleTime& data);
+//        static void save_power_save_settings(const IdleTime& data);
 //        static uint32_t ms_to_seconds(uint32_t time_in_ms);
 
 //        void reset_timers();
@@ -70,17 +70,17 @@ class PersistentIdleDygmaLEDs : public IdleLEDsDygma
     public:
         EventHandlerResult onSetup();
 //        EventHandlerResult onFocusEvent(const char *command);
-        static void save_power_save_settings(const IdleTime& data);
+//        static void save_power_save_settings(const IdleTime& data);
 
-        void true_sleep_save( bool true_sleep_enable );
-        void true_sleep_time_ms_save( uint32_t true_sleep_time_ms );
-        void leds_off_wired_time_ms_save( uint32_t leds_off_wired_time_ms );
-        void leds_off_wireless_time_ms_save( uint32_t leds_off_wireless_time_ms );
-
-        bool true_sleep_load( void );
-        uint32_t true_sleep_time_ms_save( void );
-        uint32_t leds_off_wired_time_ms_save( void );
-        uint32_t leds_off_wireless_time_ms_save( void );
+//        void true_sleep_save( bool true_sleep_enable );
+//        void true_sleep_time_ms_save( uint32_t true_sleep_time_ms );
+//        void leds_off_wired_time_ms_save( uint32_t leds_off_wired_time_ms );
+//        void leds_off_wireless_time_ms_save( uint32_t leds_off_wireless_time_ms );
+//
+//        bool true_sleep_load( void );
+//        uint32_t true_sleep_time_ms_save( void );
+//        uint32_t leds_off_wired_time_ms_save( void );
+//        uint32_t leds_off_wireless_time_ms_save( void );
 
     private:
         static uint16_t settings_base_;

@@ -36,7 +36,7 @@ namespace plugin
 
 //Deep sleep flag
 //bool IdleLEDsDygma::sleep_ = false;
-IdleLEDsDygma::IdleTime IdleLEDsDygma::Power_save;
+//IdleLEDsDygma::IdleTime IdleLEDsDygma::Power_save;
 //uint32_t IdleLEDsDygma::start_time_wired = 0;
 //uint32_t IdleLEDsDygma::start_time_wireless = 0;
 //uint32_t IdleLEDsDygma::start_time_true_sleep = 0;
@@ -158,71 +158,71 @@ EventHandlerResult PersistentIdleDygmaLEDs::onSetup()
 
     settings_base_ = ::EEPROMSettings.requestSlice(sizeof(IdleTime));
 
-    // If idleTime is max, assume that EEPROM is uninitialized, and store the defaults.
-    IdleTime idle_time;
-    Runtime.storage().get(settings_base_, idle_time);
-    if (idle_time.leds_off_usb_idle_t_ms == 0xffffffff)
-    {
-        idle_time.activate_keybsides_sleep = false;
-        idle_time.sides_sleep_idle_t_ms = sides_sleep_idle_t_ms_default;
-        idle_time.leds_off_usb_idle_t_ms = leds_off_usb_idle_t_ms_default;
-        idle_time.leds_off_ble_idle_t_ms = leds_off_ble_idle_t_ms_default;
-    }
-    save_power_save_settings(idle_time);
-    Runtime.storage().get(settings_base_, Power_save);
+//    // If idleTime is max, assume that EEPROM is uninitialized, and store the defaults.
+//    IdleTime idle_time;
+//    Runtime.storage().get(settings_base_, idle_time);
+//    if (idle_time.leds_off_usb_idle_t_ms == 0xffffffff)
+//    {
+//        idle_time.activate_keybsides_sleep = false;
+//        idle_time.sides_sleep_idle_t_ms = sides_sleep_idle_t_ms_default;
+//        idle_time.leds_off_usb_idle_t_ms = leds_off_usb_idle_t_ms_default;
+//        idle_time.leds_off_ble_idle_t_ms = leds_off_ble_idle_t_ms_default;
+//    }
+//    save_power_save_settings(idle_time);
+//    Runtime.storage().get(settings_base_, Power_save);
 
     return EventHandlerResult::OK;
 }
 
-void PersistentIdleDygmaLEDs::save_power_save_settings(const IdleTime &data)
-{
-    Runtime.storage().put(settings_base_, data);
-    Runtime.storage().commit();
-}
+//void PersistentIdleDygmaLEDs::save_power_save_settings(const IdleTime &data)
+//{
+//    Runtime.storage().put(settings_base_, data);
+//    Runtime.storage().commit();
+//}
 
-void PersistentIdleDygmaLEDs::true_sleep_save( bool true_sleep_enable )
-{
-    Power_save.activate_keybsides_sleep = true_sleep_enable;
-    save_power_save_settings(Power_save);
-}
-
-void PersistentIdleDygmaLEDs::true_sleep_time_ms_save( uint32_t true_sleep_time_ms )
-{
-    Power_save.sides_sleep_idle_t_ms = true_sleep_time_ms;
-    save_power_save_settings(Power_save);
-}
-
-void PersistentIdleDygmaLEDs::leds_off_wired_time_ms_save( uint32_t leds_off_wired_time_ms )
-{
-    Power_save.leds_off_usb_idle_t_ms = leds_off_wired_time_ms;
-    save_power_save_settings(Power_save);
-}
-
-void PersistentIdleDygmaLEDs::leds_off_wireless_time_ms_save( uint32_t leds_off_wireless_time_ms )
-{
-    Power_save.leds_off_ble_idle_t_ms = leds_off_wireless_time_ms;
-    save_power_save_settings(Power_save);
-}
-
-bool PersistentIdleDygmaLEDs::true_sleep_load( void )
-{
-    return Power_save.activate_keybsides_sleep;
-}
-
-uint32_t PersistentIdleDygmaLEDs::true_sleep_time_ms_save( void )
-{
-    return Power_save.sides_sleep_idle_t_ms;
-}
-
-uint32_t PersistentIdleDygmaLEDs::leds_off_wired_time_ms_save( void )
-{
-    return Power_save.leds_off_usb_idle_t_ms;
-}
-
-uint32_t PersistentIdleDygmaLEDs::leds_off_wireless_time_ms_save( void )
-{
-    return Power_save.leds_off_ble_idle_t_ms;
-}
+//void PersistentIdleDygmaLEDs::true_sleep_save( bool true_sleep_enable )
+//{
+//    Power_save.activate_keybsides_sleep = true_sleep_enable;
+//    save_power_save_settings(Power_save);
+//}
+//
+//void PersistentIdleDygmaLEDs::true_sleep_time_ms_save( uint32_t true_sleep_time_ms )
+//{
+//    Power_save.sides_sleep_idle_t_ms = true_sleep_time_ms;
+//    save_power_save_settings(Power_save);
+//}
+//
+//void PersistentIdleDygmaLEDs::leds_off_wired_time_ms_save( uint32_t leds_off_wired_time_ms )
+//{
+//    Power_save.leds_off_usb_idle_t_ms = leds_off_wired_time_ms;
+//    save_power_save_settings(Power_save);
+//}
+//
+//void PersistentIdleDygmaLEDs::leds_off_wireless_time_ms_save( uint32_t leds_off_wireless_time_ms )
+//{
+//    Power_save.leds_off_ble_idle_t_ms = leds_off_wireless_time_ms;
+//    save_power_save_settings(Power_save);
+//}
+//
+//bool PersistentIdleDygmaLEDs::true_sleep_load( void )
+//{
+//    return Power_save.activate_keybsides_sleep;
+//}
+//
+//uint32_t PersistentIdleDygmaLEDs::true_sleep_time_ms_save( void )
+//{
+//    return Power_save.sides_sleep_idle_t_ms;
+//}
+//
+//uint32_t PersistentIdleDygmaLEDs::leds_off_wired_time_ms_save( void )
+//{
+//    return Power_save.leds_off_usb_idle_t_ms;
+//}
+//
+//uint32_t PersistentIdleDygmaLEDs::leds_off_wireless_time_ms_save( void )
+//{
+//    return Power_save.leds_off_ble_idle_t_ms;
+//}
 
 //EventHandlerResult PersistentIdleDygmaLEDs::onFocusEvent(const char *command)
 //{
