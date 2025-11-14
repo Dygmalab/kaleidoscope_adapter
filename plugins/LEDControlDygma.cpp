@@ -218,32 +218,32 @@ kbdapi_led_effect_action_t LEDControl::getCurrentAction(void)
 //    Runtime.device().syncLeds();
 //}
 
-void LEDControl::fade_effect_save( fade_effect_t fade_is_enabled )
-{
-    Runtime.storage().put(settings_base_, fade_is_enabled );
-    Runtime.storage().commit();
-}
+//void LEDControl::fade_effect_save( fade_effect_t fade_is_enabled )
+//{
+//    Runtime.storage().put(settings_base_, fade_is_enabled );
+//    Runtime.storage().commit();
+//}
 
-LEDControl::fade_effect_t LEDControl::fade_effect_load( void )
-{
-    fade_effect_t fade_is_enabled;
-
-    Runtime.storage().get(settings_base_, fade_is_enabled);
-
-    return fade_is_enabled;
-}
+//LEDControl::fade_effect_t LEDControl::fade_effect_load( void )
+//{
+//    fade_effect_t fade_is_enabled;
+//
+//    Runtime.storage().get(settings_base_, fade_is_enabled);
+//
+//    return fade_is_enabled;
+//}
 
 kaleidoscope::EventHandlerResult LEDControl::onSetup()
 {
-    LEDControl::fade_effect_t fade_is_enabled;
-    settings_base_ = kaleidoscope::plugin::EEPROMSettings::requestSlice(sizeof(LEDControl::fade_effect_t));
+//    LEDControl::fade_effect_t fade_is_enabled;
+    settings_base_ = kaleidoscope::plugin::EEPROMSettings::requestSlice(sizeof(uint8_t));
 
-    Runtime.storage().get(settings_base_, fade_is_enabled);
+//    Runtime.storage().get(settings_base_, fade_is_enabled);
     // For now lest think that if one block is invalid restart everything
-    if (fade_is_enabled == 0xFF)
-    {
-        fade_effect_save( 0 );
-    }
+//    if (fade_is_enabled == 0xFF)
+//    {
+//        fade_effect_save( 0 );
+//    }
 
 //    set_all_leds_to({0, 0, 0});
 

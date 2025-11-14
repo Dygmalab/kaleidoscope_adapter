@@ -38,8 +38,8 @@ class LEDMode;
 class LEDControl : public kaleidoscope::Plugin
 {
   public:
-#warning "Temporary fade effect type"
-    typedef uint8_t fade_effect_t;
+//#warning "Temporary fade effect type"
+//    typedef uint8_t fade_effect_t;
 
   public:
     LEDControl(void);
@@ -141,8 +141,8 @@ class LEDControl : public kaleidoscope::Plugin
     }
 
 #warning "These will be obsolete when the EEPROM configuration is solved"
-    static void fade_effect_save( fade_effect_t fade_is_enabled );
-    static LEDControl::fade_effect_t fade_effect_load( void );
+//    static void fade_effect_save( fade_effect_t fade_is_enabled );
+//    static LEDControl::fade_effect_t fade_effect_load( void );
 
 //    static void activateFadeUG(uint8_t activate_fade_effect){
 //        fade_effect = activate_fade_effect;
