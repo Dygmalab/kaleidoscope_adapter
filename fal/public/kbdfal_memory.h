@@ -29,6 +29,7 @@ extern "C" {
     typedef enum
     {
         KBDMEM_ITEM_TYPE_QUKEYS = 1,
+        KBDMEM_ITEM_TYPE_MOUSEKEYS,
     } kbdmem_item_type_t;
 
 #ifdef __cplusplus

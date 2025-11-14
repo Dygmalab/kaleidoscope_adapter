@@ -1,0 +1,459 @@
+/* Kaleidoscope-MouseKeys - Mouse keys for Kaleidoscope.
+ * Copyright (C) 2017-2018  Keyboard.io, Inc.
+ *
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation, version 3.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+
+#include <Arduino.h>
+
+#include "MouseKeysDygma.h"
+#include "kbdfal_ll_memory.h"
+
+#include "kaleidoscope/Runtime.h"
+#include "Kaleidoscope-FocusSerial.h"
+#include "kaleidoscope/keyswitch_state.h"
+
+#define DEFAULT_SPEED                   1
+#define DEFAULT_SPEED_DELAY             1
+#define DEFAULT_ACCEL_SPEED             1
+#define DEFAULT_ACCEL_DELAY             64
+#define DEFAULT_WHEEL_SPEED             1
+#define DEFAULT_WHEEL_DELAY             50
+#define DEFAULT_SPEED_LIMIT             127
+
+namespace kaleidoscope {
+namespace plugin {
+
+const MouseKeys_::MouseKeys_config_t * MouseKeys_::p_MouseKeys_config = nullptr;
+
+uint8_t MouseKeys_::mouseMoveIntent;
+
+uint16_t MouseKeys_::move_start_time_;
+uint16_t MouseKeys_::accel_start_time_;
+uint16_t MouseKeys_::wheel_start_time_;
+uint16_t MouseKeys_::storage_base_;
+
+void MouseKeys_::setWarpGridSize(uint8_t grid_size) {
+  MouseWrapper.warp_grid_size = grid_size;
+}
+
+void MouseKeys_::setSpeedLimit(uint8_t speed_limit) {
+  MouseWrapper.speedLimit = speed_limit;
+}
+
+void MouseKeys_::scrollWheel(uint8_t keyCode) {
+  if (!Runtime.hasTimeExpired(wheel_start_time_, p_MouseKeys_config->wheelDelay))
+    return;
+
+  wheel_start_time_ = Runtime.millisAtCycleStart();
+
+  if (keyCode & KEY_MOUSE_UP)
+    kaleidoscope::Runtime.hid().mouse().move(0, 0, p_MouseKeys_config->wheelSpeed);
+  else if (keyCode & KEY_MOUSE_DOWN)
+    kaleidoscope::Runtime.hid().mouse().move(0, 0, -p_MouseKeys_config->wheelSpeed);
+  else if (keyCode & KEY_MOUSE_LEFT)
+    kaleidoscope::Runtime.hid().mouse().move(0, 0, 0, -p_MouseKeys_config->wheelSpeed);
+  else if (keyCode & KEY_MOUSE_RIGHT)
+    kaleidoscope::Runtime.hid().mouse().move(0, 0, 0, p_MouseKeys_config->wheelSpeed);
+}
+
+EventHandlerResult MouseKeys_::afterEachCycle() {
+  kaleidoscope::Runtime.hid().mouse().sendReport();
+  kaleidoscope::Runtime.hid().mouse().releaseAllButtons();
+  mouseMoveIntent = 0;
+
+  return EventHandlerResult::OK;
+}
+
+EventHandlerResult MouseKeys_::beforeReportingState() {
+  if (mouseMoveIntent == 0) {
+    MouseWrapper.accelStep = 0;
+    return EventHandlerResult::OK;
+  }
+
+  if (!Runtime.hasTimeExpired(move_start_time_, p_MouseKeys_config->speedDelay))
+    return EventHandlerResult::OK;
+
+  move_start_time_ = Runtime.millisAtCycleStart();
+
+  int8_t moveX = 0, moveY = 0;
+
+  if (Runtime.hasTimeExpired(accel_start_time_, p_MouseKeys_config->accelDelay)) {
+    if (MouseWrapper.accelStep < 255 - p_MouseKeys_config->accelSpeed) {
+      MouseWrapper.accelStep += p_MouseKeys_config->accelSpeed;
+    }
+    accel_start_time_ = Runtime.millisAtCycleStart();
+  }
+
+  if (mouseMoveIntent & KEY_MOUSE_UP)
+    moveY -= p_MouseKeys_config->speed;
+  if (mouseMoveIntent & KEY_MOUSE_DOWN)
+    moveY += p_MouseKeys_config->speed;
+
+  if (mouseMoveIntent & KEY_MOUSE_LEFT)
+    moveX -= p_MouseKeys_config->speed;
+  if (mouseMoveIntent & KEY_MOUSE_RIGHT)
+    moveX += p_MouseKeys_config->speed;
+
+  MouseWrapper.move(moveX, moveY);
+
+  return EventHandlerResult::OK;
+}
+
+EventHandlerResult MouseKeys_::onKeyswitchEvent(Key &mappedKey, KeyAddr key_addr, uint8_t keyState) {
+  if (mappedKey.getFlags() != (SYNTHETIC | IS_MOUSE_KEY))
+    return EventHandlerResult::OK;
+
+  if (mappedKey.getKeyCode() & KEY_MOUSE_BUTTON && !(mappedKey.getKeyCode() & KEY_MOUSE_WARP)) {
+    uint8_t button = mappedKey.getKeyCode() & ~KEY_MOUSE_BUTTON;
+
+    if (keyIsPressed(keyState)) {
+      // Reset warp state on initial mouse button key-down only so we can use
+      // warp keys to drag-and-drop:
+      if (keyToggledOn(keyState)) {
+        MouseWrapper.reset_warping();
+      }
+
+      kaleidoscope::Runtime.hid().mouse().pressButtons(button);
+    } else if (keyToggledOff(keyState)) {
+      kaleidoscope::Runtime.hid().mouse().releaseButtons(button);
+      MouseWrapper.end_warping();
+    }
+  } else if (!(mappedKey.getKeyCode() & KEY_MOUSE_WARP)) {
+    if (keyToggledOn(keyState)) {
+      move_start_time_ = Runtime.millisAtCycleStart();
+      accel_start_time_ = Runtime.millisAtCycleStart();
+      wheel_start_time_ = Runtime.millisAtCycleStart() - p_MouseKeys_config->wheelDelay;
+    }
+    if (keyIsPressed(keyState)) {
+      if (mappedKey.getKeyCode() & KEY_MOUSE_WHEEL) {
+        scrollWheel(mappedKey.getKeyCode());
+      } else {
+        mouseMoveIntent |= mappedKey.getKeyCode();
+      }
+    } else if (keyToggledOff(keyState)) {
+      /* If a mouse key toggles off, we want to explicitly stop moving (or
+       * scrolling) in that direction. We want to do this to support use-cases
+       * where we send multiple reports per cycle (such as macros), and can't
+       * rely on the main loop clearing the report for us. We do not want to
+       * clear the whole report either, because we want any other mouse keys
+       * to still have their desired effect. Therefore, we selectively stop
+       * movement or scrolling. */
+      mouseMoveIntent &= ~mappedKey.getKeyCode();
+      bool x = false, y = false, vWheel = false, hWheel = false;
+
+      if (mappedKey.getKeyCode() & KEY_MOUSE_UP ||
+          mappedKey.getKeyCode() & KEY_MOUSE_DOWN) {
+        if (mappedKey.getKeyCode() & KEY_MOUSE_WHEEL) {
+          vWheel = true;
+        } else {
+          y = true;
+        }
+      } else if (mappedKey.getKeyCode() & KEY_MOUSE_LEFT ||
+                 mappedKey.getKeyCode() & KEY_MOUSE_RIGHT) {
+        if (mappedKey.getKeyCode() & KEY_MOUSE_WHEEL) {
+          hWheel = true;
+        } else {
+          x = true;
+        }
+      }
+
+      kaleidoscope::Runtime.hid().mouse().stop(x, y, vWheel, hWheel);
+    }
+  } else if (keyToggledOn(keyState)) {
+    if (mappedKey.getKeyCode() & KEY_MOUSE_WARP && mappedKey.getFlags() & IS_MOUSE_KEY) {
+      MouseWrapper.warp(((mappedKey.getKeyCode() & KEY_MOUSE_WARP_END) ? WARP_END : 0x00) |
+                        ((mappedKey.getKeyCode() & KEY_MOUSE_UP) ? WARP_UP : 0x00) |
+                        ((mappedKey.getKeyCode() & KEY_MOUSE_DOWN) ? WARP_DOWN : 0x00) |
+                        ((mappedKey.getKeyCode() & KEY_MOUSE_LEFT) ? WARP_LEFT : 0x00) |
+                        ((mappedKey.getKeyCode() & KEY_MOUSE_RIGHT) ? WARP_RIGHT : 0x00));
+    }
+  }
+
+  return EventHandlerResult::EVENT_CONSUMED;
+}
+
+EventHandlerResult MouseKeys_::onFocusEvent(const char *command)
+{
+  if (::Focus.handleHelp(command, PSTR("mouse.speed\nmouse.speedDelay\nmouse.accelSpeed\nmouse.accelDelay\nmouse.wheelSpeed\nmouse.wheelDelay\nmouse.speedLimit")))
+    return EventHandlerResult::OK;
+
+  if (strncmp_P(command, PSTR("mouse."), 6) != 0)
+    return EventHandlerResult::OK;
+
+  if (strcmp_P(command + 6, PSTR("speed")) == 0)
+  {
+    if (::Focus.isEOL())
+    {
+      ::Focus.send(p_MouseKeys_config->speed);
+    }
+    else
+    {
+      uint8_t auxspeed;
+      ::Focus.read(auxspeed);
+
+      mem_speed_save( auxspeed );
+    }
+  }
+
+  if (strcmp_P(command + 6, PSTR("speedDelay")) == 0)
+  {
+    if (::Focus.isEOL())
+    {
+      ::Focus.send(p_MouseKeys_config->speedDelay);
+    }
+    else
+    {
+      uint16_t auxspeedDelay = 0;
+      uint8_t a{0};
+      uint8_t b{0};
+      ::Focus.read(a);
+      while (!::Focus.isEOL())
+      {
+        ::Focus.read(b);
+      }
+      auxspeedDelay = ((b << 8) | a);
+
+      mem_speed_delay_save( auxspeedDelay );
+    }
+  }
+
+  if (strcmp_P(command + 6, PSTR("accelSpeed")) == 0)
+  {
+    if (::Focus.isEOL())
+    {
+      ::Focus.send(p_MouseKeys_config->accelSpeed);
+    }
+    else
+    {
+      uint8_t auxaccelSpeed;
+      ::Focus.read(auxaccelSpeed);
+
+      mem_accel_speed_save( auxaccelSpeed );
+    }
+  }
+
+  if (strcmp_P(command + 6, PSTR("accelDelay")) == 0)
+  {
+    if (::Focus.isEOL())
+    {
+      ::Focus.send(p_MouseKeys_config->accelDelay);
+    }
+    else
+    {
+      uint16_t auxaccelDelay = 0;
+      uint8_t a{0};
+      uint8_t b{0};
+      ::Focus.read(a);
+      while (!::Focus.isEOL())
+      {
+        ::Focus.read(b);
+      }
+      auxaccelDelay = ((b << 8) | a);
+
+      mem_accel_delay_save( auxaccelDelay );
+    }
+  }
+
+  if (strcmp_P(command + 6, PSTR("wheelSpeed")) == 0)
+  {
+    if (::Focus.isEOL())
+    {
+      ::Focus.send(p_MouseKeys_config->wheelSpeed);
+    }
+    else
+    {
+      uint8_t auxwheelSpeed;
+      ::Focus.read(auxwheelSpeed);
+
+      mem_wheel_speed_save( auxwheelSpeed );
+    }
+  }
+
+  if (strcmp_P(command + 6, PSTR("wheelDelay")) == 0)
+  {
+    if (::Focus.isEOL())
+    {
+      ::Focus.send(p_MouseKeys_config->wheelDelay);
+    }
+    else
+    {
+      uint16_t auxwheelDelay = 0;
+      uint8_t a{0};
+      uint8_t b{0};
+      ::Focus.read(a);
+      while (!::Focus.isEOL())
+      {
+        ::Focus.read(b);
+      }
+      auxwheelDelay = ((b << 8) | a);
+
+      mem_wheel_delay_save( auxwheelDelay );
+    }
+  }
+
+  if (strcmp_P(command + 6, PSTR("speedLimit")) == 0)
+  {
+    if (::Focus.isEOL())
+    {
+      ::Focus.send(MouseWrapper.speedLimit);
+    }
+    else
+    {
+      uint8_t auxspeedLimit;
+      ::Focus.read(auxspeedLimit);
+      setSpeedLimit(auxspeedLimit);
+
+      Runtime.storage().update(storage_base_ + 9, auxspeedLimit);
+      Runtime.storage().commit();
+    }
+  }
+
+  return EventHandlerResult::EVENT_CONSUMED;
+}
+
+EventHandlerResult MouseKeys_::onSetup(void) {
+  result_t result = RESULT_ERR;
+
+  kaleidoscope::Runtime.hid().mouse().setup();
+  kaleidoscope::Runtime.hid().absoluteMouse().setup();
+
+  uint8_t size = 10 * sizeof(uint8_t);
+  MouseKeys_::storage_base_ = ::EEPROMSettings.requestSlice(size);
+//  uint8_t spd;
+//  uint16_t spdDelay;
+//  uint8_t accspd;
+//  uint16_t accDelay;
+//  uint8_t wheelspd;
+//  uint16_t wheelDlay;
+//  uint8_t spdLimit;
+
+  result = kbdfal_ll_memory_item_request( KBDMEM_ITEM_TYPE_MOUSEKEYS, (const void **)&p_MouseKeys_config );
+  ASSERT_DYGMA( result == RESULT_OK, "kbdfal_ll_memory_item_request failed" );
+
+  if( p_MouseKeys_config->speed >= 255 )
+  {
+    mem_speed_save( DEFAULT_SPEED );
+  }
+
+  if( p_MouseKeys_config->speedDelay >= 65535 )
+  {
+    mem_speed_delay_save( DEFAULT_SPEED_DELAY );
+  }
+
+  if( p_MouseKeys_config->accelSpeed >= 255 )
+  {
+    mem_accel_speed_save( DEFAULT_ACCEL_SPEED );
+  }
+
+  if( p_MouseKeys_config->accelDelay >= 65535 )
+  {
+    mem_accel_delay_save( DEFAULT_ACCEL_DELAY );
+  }
+
+  if( p_MouseKeys_config->wheelSpeed >= 255 )
+  {
+    mem_wheel_speed_save( DEFAULT_WHEEL_SPEED );
+  }
+
+  if( p_MouseKeys_config->wheelDelay >= 65535 )
+  {
+    mem_wheel_delay_save( DEFAULT_WHEEL_DELAY );
+  }
+
+  if( p_MouseKeys_config->speedLimit >= 255 )
+  {
+    mem_speed_limit_save( DEFAULT_SPEED_LIMIT );
+  }
+
+  setSpeedLimit( p_MouseKeys_config->speedLimit );
+
+  return EventHandlerResult::OK;
+
+  UNUSED( result );
+}
+
+void MouseKeys_::mem_speed_save( uint8_t speed )
+{
+    result_t result = RESULT_ERR;
+
+    result = kbdfal_ll_memory_data_save( &p_MouseKeys_config->speed, &speed, sizeof(p_MouseKeys_config->speed) );
+    ASSERT_DYGMA( result == RESULT_OK, "kbdfal_ll_memory_save failed" );
+
+    UNUSED( result );
+}
+
+void MouseKeys_::mem_speed_delay_save( uint16_t speedDelay )
+{
+    result_t result = RESULT_ERR;
+
+    result = kbdfal_ll_memory_data_save( &p_MouseKeys_config->speedDelay, &speedDelay, sizeof(p_MouseKeys_config->speedDelay) );
+    ASSERT_DYGMA( result == RESULT_OK, "kbdfal_ll_memory_save failed" );
+
+    UNUSED( result );
+}
+
+void MouseKeys_::mem_accel_speed_save( uint8_t accelSpeed )
+{
+    result_t result = RESULT_ERR;
+
+    result = kbdfal_ll_memory_data_save( &p_MouseKeys_config->accelSpeed, &accelSpeed, sizeof(p_MouseKeys_config->accelSpeed) );
+    ASSERT_DYGMA( result == RESULT_OK, "kbdfal_ll_memory_save failed" );
+
+    UNUSED( result );
+}
+
+void MouseKeys_::mem_accel_delay_save( uint16_t accelDelay )
+{
+    result_t result = RESULT_ERR;
+
+    result = kbdfal_ll_memory_data_save( &p_MouseKeys_config->accelDelay, &accelDelay, sizeof(p_MouseKeys_config->accelDelay) );
+    ASSERT_DYGMA( result == RESULT_OK, "kbdfal_ll_memory_save failed" );
+
+    UNUSED( result );
+}
+
+void MouseKeys_::mem_wheel_speed_save( uint8_t wheelSpeed )
+{
+    result_t result = RESULT_ERR;
+
+    result = kbdfal_ll_memory_data_save( &p_MouseKeys_config->wheelSpeed, &wheelSpeed, sizeof(p_MouseKeys_config->wheelSpeed) );
+    ASSERT_DYGMA( result == RESULT_OK, "kbdfal_ll_memory_save failed" );
+
+    UNUSED( result );
+}
+
+void MouseKeys_::mem_wheel_delay_save( uint16_t wheelDelay )
+{
+    result_t result = RESULT_ERR;
+
+    result = kbdfal_ll_memory_data_save( &p_MouseKeys_config->wheelDelay, &wheelDelay, sizeof(p_MouseKeys_config->wheelDelay) );
+    ASSERT_DYGMA( result == RESULT_OK, "kbdfal_ll_memory_save failed" );
+
+    UNUSED( result );
+}
+
+void MouseKeys_::mem_speed_limit_save( uint8_t speedLimit )
+{
+    result_t result = RESULT_ERR;
+
+    result = kbdfal_ll_memory_data_save( &p_MouseKeys_config->speedLimit, &speedLimit, sizeof(p_MouseKeys_config->speedLimit) );
+    ASSERT_DYGMA( result == RESULT_OK, "kbdfal_ll_memory_save failed" );
+
+    UNUSED( result );
+}
+
+}
+}
+
+kaleidoscope::plugin::MouseKeys_ MouseKeys;

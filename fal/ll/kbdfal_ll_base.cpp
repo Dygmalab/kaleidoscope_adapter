@@ -21,6 +21,7 @@
 #include "kbdfal_ll_base.h"
 #include "KbdInterface.h"
 #include "LEDControlDygma.h"
+#include "MouseKeysDygma.h"
 #include "QukeysDygma.h"
 
 // Kaleidoscope
@@ -32,7 +33,7 @@
 #include "IdleLEDsDygma.h"
 #include "Kaleidoscope-LayerFocus.h"
 //#include "Kaleidoscope-MagicCombo.h"
-#include "Kaleidoscope-MouseKeys.h"
+//#include "Kaleidoscope-MouseKeys.h"
 #include "Kaleidoscope.h"
 
 #include "kaleidoscope/device/dygma/keyboardManager/universalModules/Focus.h"
