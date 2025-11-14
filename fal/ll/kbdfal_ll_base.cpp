@@ -21,6 +21,7 @@
 #include "kbdfal_ll_base.h"
 #include "KbdInterface.h"
 #include "LEDControlDygma.h"
+#include "QukeysDygma.h"
 
 // Kaleidoscope
 #include "Kaleidoscope-DynamicMacros.h"
@@ -40,7 +41,7 @@
 #include "Kaleidoscope-HostPowerManagement.h"
 
 #include "Kaleidoscope-OneShot.h"
-#include "Kaleidoscope-Qukeys.h"
+//#include "Kaleidoscope-Qukeys.h"
 
 // #include "LED-CapsLockLight.h"
 
