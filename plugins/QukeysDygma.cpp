@@ -27,6 +27,10 @@
 #include "kaleidoscope/progmem_helpers.h"
 #include "kaleidoscope/layers.h"
 
+#define DEFAULT_HOLD_TIMEOUT_MS              250
+#define DEFAULT_OVERLAP_THRESHOLD            80
+#define DEFAULT_MINIMUM_HOLD_TIME_MS         50
+#define DEFAULT_MINIMUM_PRIOR_INTERVAL_MS    75
 
 namespace kaleidoscope {
 namespace plugin {
@@ -127,9 +131,9 @@ EventHandlerResult Qukeys::beforeReportingState() {
   // Next, if there hasn't been a keypress in a while, update the prior keypress
   // timestamp to avoid integer overflow issues:
   if (Runtime.hasTimeExpired(prior_keypress_timestamp_,
-                             p_qukeys_config->minimum_prior_interval)) {
+                             p_Qukeys_config->minimum_prior_interval)) {
     prior_keypress_timestamp_ =
-      Runtime.millisAtCycleStart() - (p_qukeys_config->minimum_prior_interval + 1);
+      Runtime.millisAtCycleStart() - (p_Qukeys_config->minimum_prior_interval + 1);
   }
 
   // If any events get flushed from the queue, stop there; we can only safely
@@ -141,7 +145,7 @@ EventHandlerResult Qukeys::beforeReportingState() {
   // If we get here, that means that the first event in the queue is a qukey
   // press. All that's left to do is to check if it's been held long enough that
   // it has timed out.
-  if (Runtime.hasTimeExpired(event_queue_.timestamp(0), p_qukeys_config->hold_timeout)) {
+  if (Runtime.hasTimeExpired(event_queue_.timestamp(0), p_Qukeys_config->hold_timeout)) {
     // If it's a SpaceCadet-type key, it takes on its primary value, otherwise
     // it takes on its secondary value.
     Key event_key = isModifierKey(queue_head_.primary_key) ?
@@ -202,7 +206,7 @@ bool Qukeys::processQueue() {
   // If the qukey press is followed a printable key too closely, it's not
   // eligible to take on its alternate value unless it's a SpaceCadet-type key.
   if (!Runtime.hasTimeExpired(prior_keypress_timestamp_,
-                              p_qukeys_config->minimum_prior_interval) &&
+                              p_Qukeys_config->minimum_prior_interval) &&
       !qukey_is_spacecadet) {
     flushEvent(queue_head_.primary_key);
   }
@@ -235,7 +239,7 @@ bool Qukeys::processQueue() {
       // SpaceCadet key, or if no rollover compensation is being used, we can
       // flush it now. Its state depends on whether or not it's a
       // SpaceCadet-type key.
-      if (next_keypress_index == 0 || p_qukeys_config->overlap_threshold == 0) {
+      if (next_keypress_index == 0 || p_Qukeys_config->overlap_threshold == 0) {
         Key event_key = qukey_is_spacecadet ?
                         queue_head_.alternate_key : queue_head_.primary_key;
         flushEvent(event_key);
@@ -273,7 +277,7 @@ bool Qukeys::processQueue() {
         // to make it eligible for its alternate value. This helps faster
         // typists avoid unintended modifiers in the output.
         if (Runtime.hasTimeExpired(event_queue_.timestamp(0),
-                                   p_qukeys_config->minimum_hold_time)) {
+                                   p_Qukeys_config->minimum_hold_time)) {
           flushEvent(queue_head_.alternate_key);
           return true;
         }
@@ -402,7 +406,7 @@ bool Qukeys::releaseDelayed(uint16_t overlap_start,
   // divide by the percentage value (as an integer). We use 32-bit integers
   // here to make sure it doesn't overflow when we multiply by 100.
   uint32_t overlap_duration = overlap_end - overlap_start;
-  uint32_t release_timeout = (overlap_duration * 100) / p_qukeys_config->overlap_threshold;
+  uint32_t release_timeout = (overlap_duration * 100) / p_Qukeys_config->overlap_threshold;
   return !Runtime.hasTimeExpired(overlap_start, uint16_t(release_timeout));
 }
 
@@ -456,7 +460,7 @@ EventHandlerResult Qukeys::onFocusEvent(const char *command)
   {
     if (::Focus.isEOL())
     {
-      ::Focus.send(p_qukeys_config->hold_timeout);
+      ::Focus.send(p_Qukeys_config->hold_timeout);
     }
     else
     {
@@ -478,7 +482,7 @@ EventHandlerResult Qukeys::onFocusEvent(const char *command)
   {
     if (::Focus.isEOL())
     {
-      ::Focus.send(p_qukeys_config->overlap_threshold);
+      ::Focus.send(p_Qukeys_config->overlap_threshold);
     }
     else
     {
@@ -493,7 +497,7 @@ EventHandlerResult Qukeys::onFocusEvent(const char *command)
   {
     if (::Focus.isEOL())
     {
-      ::Focus.send(p_qukeys_config->minimum_hold_time);
+      ::Focus.send(p_Qukeys_config->minimum_hold_time);
     }
     else
     {
@@ -508,7 +512,7 @@ EventHandlerResult Qukeys::onFocusEvent(const char *command)
   {
     if (::Focus.isEOL())
     {
-      ::Focus.send(p_qukeys_config->minimum_prior_interval);
+      ::Focus.send(p_Qukeys_config->minimum_prior_interval);
     }
     else
     {
@@ -533,27 +537,27 @@ EventHandlerResult Qukeys::onSetup()
 //  uint8_t minimum;
 //  uint8_t prior;
 
-  result = kbdfal_ll_memory_item_request( KBDMEM_ITEM_TYPE_QUKEYS, (const void **)&p_qukeys_config );
+  result = kbdfal_ll_memory_item_request( KBDMEM_ITEM_TYPE_QUKEYS, (const void **)&p_Qukeys_config );
   ASSERT_DYGMA( result == RESULT_OK, "kbdfal_ll_memory_item_request failed" );
 
-  if( p_qukeys_config->hold_timeout > 60000 )
+  if( p_Qukeys_config->hold_timeout > 60000 )
   {
-    mem_hold_timeout_save( QUKEYS_DEFAULT_HOLD_TIMEOUT_MS );
+    mem_hold_timeout_save( DEFAULT_HOLD_TIMEOUT_MS );
   }
 
-  if( p_qukeys_config->overlap_threshold > 100 )
+  if( p_Qukeys_config->overlap_threshold > 100 )
   {
-    mem_overlap_threshold_save( QUKEYS_DEFAULT_OVERLAP_THRESHOLD );
+    mem_overlap_threshold_save( DEFAULT_OVERLAP_THRESHOLD );
   }
 
-  if( p_qukeys_config->minimum_hold_time > 254 )
+  if( p_Qukeys_config->minimum_hold_time > 254 )
   {
-    mem_minimum_hold_time_save( QUKEYS_DEFAULT_MINIMUM_HOLD_TIME_MS );
+    mem_minimum_hold_time_save( DEFAULT_MINIMUM_HOLD_TIME_MS );
   }
 
-  if( p_qukeys_config->minimum_prior_interval > 254 )
+  if( p_Qukeys_config->minimum_prior_interval > 254 )
   {
-    mem_minimum_prior_interval_save( QUKEYS_DEFAULT_MINIMUM_PRIOR_INTERVAL_MS );
+    mem_minimum_prior_interval_save( DEFAULT_MINIMUM_PRIOR_INTERVAL_MS );
   }
 
   return EventHandlerResult::OK;
@@ -565,7 +569,7 @@ void Qukeys::mem_hold_timeout_save( uint16_t hold_timeout )
 {
     result_t result = RESULT_ERR;
 
-    result = kbdfal_ll_memory_data_save( &p_qukeys_config->hold_timeout, &hold_timeout, sizeof(p_qukeys_config->hold_timeout) );
+    result = kbdfal_ll_memory_data_save( &p_Qukeys_config->hold_timeout, &hold_timeout, sizeof(p_Qukeys_config->hold_timeout) );
     ASSERT_DYGMA( result == RESULT_OK, "kbdfal_ll_memory_save failed" );
 
     UNUSED( result );
@@ -575,7 +579,7 @@ void Qukeys::mem_overlap_threshold_save( uint8_t overlap_threshold )
 {
     result_t result = RESULT_ERR;
 
-    result = kbdfal_ll_memory_data_save( &p_qukeys_config->overlap_threshold, &overlap_threshold, sizeof(p_qukeys_config->overlap_threshold) );
+    result = kbdfal_ll_memory_data_save( &p_Qukeys_config->overlap_threshold, &overlap_threshold, sizeof(p_Qukeys_config->overlap_threshold) );
     ASSERT_DYGMA( result == RESULT_OK, "kbdfal_ll_memory_save failed" );
 
     UNUSED( result );
@@ -585,7 +589,7 @@ void Qukeys::mem_minimum_hold_time_save( uint8_t minimum_hold_time )
 {
     result_t result = RESULT_ERR;
 
-    result = kbdfal_ll_memory_data_save( &p_qukeys_config->minimum_hold_time, &minimum_hold_time, sizeof(p_qukeys_config->minimum_hold_time) );
+    result = kbdfal_ll_memory_data_save( &p_Qukeys_config->minimum_hold_time, &minimum_hold_time, sizeof(p_Qukeys_config->minimum_hold_time) );
     ASSERT_DYGMA( result == RESULT_OK, "minimum_hold_time failed" );
 
     UNUSED( result );
@@ -595,7 +599,7 @@ void Qukeys::mem_minimum_prior_interval_save( uint8_t minimum_prior_interval )
 {
     result_t result = RESULT_ERR;
 
-    result = kbdfal_ll_memory_data_save( &p_qukeys_config->minimum_prior_interval, &minimum_prior_interval, sizeof(p_qukeys_config->minimum_prior_interval) );
+    result = kbdfal_ll_memory_data_save( &p_Qukeys_config->minimum_prior_interval, &minimum_prior_interval, sizeof(p_Qukeys_config->minimum_prior_interval) );
     ASSERT_DYGMA( result == RESULT_OK, "minimum_prior_interval failed" );
 
     UNUSED( result );

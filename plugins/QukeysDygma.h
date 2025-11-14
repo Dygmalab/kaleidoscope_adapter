@@ -39,24 +39,24 @@
 
 #define LT(layer, key) Key(kaleidoscope::ranges::DUL_FIRST + (layer << 8) + (Key_ ## key).getKeyCode())
 
-//#define _DEPRECATED_MESSAGE_QUKEY_ROW_COL_CONSTRUCTOR                           \
-//  "The `Qukey(layer, row, col, alternate_key)` constructor using separate\n"    \
-//  "`row` & `col` parameters has been deprecated. Please replace this\n"         \
-//  "constructor with the new `KeyAddr` version:\n"                               \
-//  "    `Qukey(layer, KeyAddr(row, col), alternate_key)`"                        \
-//  "The deprecated function will be removed after 2020-12-31"
-//
-//#define _DEPRECATED_MESSAGE_QUKEYS_TIMEOUT                                      \
-//  "The Qukeys.setTimeout() function has been renamed to setHoldTimeout()\n"     \
-//  "in order to distinguish it from the other timeouts more clearly."            \
-//  "The deprecated function will be removed after 2020-12-31"
-//
-//#define _DEPRECATED_MESSAGE_QUKEYS_RELEASEDELAY                                 \
-//  "The Qukeys.setReleaseDelay() is now obsolete. The rollover grace period\n"   \
-//  "for qukey release has been replaced with an improved version based on\n"     \
-//  "the percentage of overlap between the qukey and the subsequent\n"            \
-//  "key. Please use the setOverlapThreshold() function instead."                 \
-//  "The deprecated function will be removed after 2020-12-31"
+/*#define _DEPRECATED_MESSAGE_QUKEY_ROW_COL_CONSTRUCTOR                           \
+  "The `Qukey(layer, row, col, alternate_key)` constructor using separate\n"    \
+  "`row` & `col` parameters has been deprecated. Please replace this\n"         \
+  "constructor with the new `KeyAddr` version:\n"                               \
+  "    `Qukey(layer, KeyAddr(row, col), alternate_key)`"                        \
+  "The deprecated function will be removed after 2020-12-31"
+
+#define _DEPRECATED_MESSAGE_QUKEYS_TIMEOUT                                      \
+  "The Qukeys.setTimeout() function has been renamed to setHoldTimeout()\n"     \
+  "in order to distinguish it from the other timeouts more clearly."            \
+  "The deprecated function will be removed after 2020-12-31"
+
+#define _DEPRECATED_MESSAGE_QUKEYS_RELEASEDELAY                                 \
+  "The Qukeys.setReleaseDelay() is now obsolete. The rollover grace period\n"   \
+  "for qukey release has been replaced with an improved version based on\n"     \
+  "the percentage of overlap between the qukey and the subsequent\n"            \
+  "key. Please use the setOverlapThreshold() function instead."                 \
+  "The deprecated function will be removed after 2020-12-31" */
 
 namespace kaleidoscope {
 namespace plugin {
@@ -91,11 +91,6 @@ struct Qukey {
 class Qukeys : public kaleidoscope::Plugin {
 
  public:
-#define QUKEYS_DEFAULT_HOLD_TIMEOUT_MS              250
-#define QUKEYS_DEFAULT_OVERLAP_THRESHOLD            80
-#define QUKEYS_DEFAULT_MINIMUM_HOLD_TIME_MS         50
-#define QUKEYS_DEFAULT_MINIMUM_PRIOR_INTERVAL_MS    75
-
     typedef struct PACK
     {
         // The number of milliseconds until a qukey held on its own will take on its
@@ -116,7 +111,7 @@ class Qukeys : public kaleidoscope::Plugin {
         // alternate value.
         uint8_t minimum_prior_interval;
 
-    } qukeys_config_t;
+    } Qukeys_config_t;
 
  public:
   // Methods for turning the plugin on and off.
@@ -222,7 +217,7 @@ class Qukeys : public kaleidoscope::Plugin {
   // This determines whether the plugin is on or off.
   bool active_{true};
 
-  const qukeys_config_t * p_qukeys_config;
+  const Qukeys_config_t * p_Qukeys_config;
 
 //  // This variable stores the percentage number between 0 and 99 that determines
 //  // how forgiving the plugin is of rollover from a qukey to a modified key.
