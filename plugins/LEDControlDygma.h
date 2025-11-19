@@ -105,42 +105,42 @@ class LEDControl : public kaleidoscope::Plugin
 
     static kbdapi_led_effect_action_t getCurrentAction(void);
 
-    // Wired
-    static void setBrightness(uint8_t brightness)
-    {
-        Runtime.device().ledDriver().setBrightness(brightness);
-    }
-    static uint8_t getBrightness()
-    {
-        return Runtime.device().ledDriver().getBrightness();
-    }
-    static void setBrightnessUG(uint8_t brightness)
-    {
-        Runtime.device().ledDriver().setBrightnessUG(brightness);
-    }
-    static uint8_t getBrightnessUG()
-    {
-        return Runtime.device().ledDriver().getBrightnessUG();
-    }
-    // Wireless
-    static void setBrightnessWireless(uint8_t brightness)
-    {
-        Runtime.device().ledDriver().setBrightnessWireless(brightness);
-    }
-    static uint8_t getBrightnessWireless()
-    {
-        return Runtime.device().ledDriver().getBrightnessWireless();
-    }
-    static void setBrightnessUGWireless(uint8_t brightness)
-    {
-        Runtime.device().ledDriver().setBrightnessUGWireless(brightness);
-    }
-    static uint8_t getBrightnessUGWireless()
-    {
-        return Runtime.device().ledDriver().getBrightnessUGWireless();
-    }
+//    // Wired
+//    static void setBrightness(uint8_t brightness)
+//    {
+//        Runtime.device().ledDriver().setBrightness(brightness);
+//    }
+//    static uint8_t getBrightness()
+//    {
+//        return Runtime.device().ledDriver().getBrightness();
+//    }
+//    static void setBrightnessUG(uint8_t brightness)
+//    {
+//        Runtime.device().ledDriver().setBrightnessUG(brightness);
+//    }
+//    static uint8_t getBrightnessUG()
+//    {
+//        return Runtime.device().ledDriver().getBrightnessUG();
+//    }
+//    // Wireless
+//    static void setBrightnessWireless(uint8_t brightness)
+//    {
+//        Runtime.device().ledDriver().setBrightnessWireless(brightness);
+//    }
+//    static uint8_t getBrightnessWireless()
+//    {
+//        return Runtime.device().ledDriver().getBrightnessWireless();
+//    }
+//    static void setBrightnessUGWireless(uint8_t brightness)
+//    {
+//        Runtime.device().ledDriver().setBrightnessUGWireless(brightness);
+//    }
+//    static uint8_t getBrightnessUGWireless()
+//    {
+//        return Runtime.device().ledDriver().getBrightnessUGWireless();
+//    }
 
-#warning "These will be obsolete when the EEPROM configuration is solved"
+//#warning "These will be obsolete when the EEPROM configuration is solved"
 //    static void fade_effect_save( fade_effect_t fade_is_enabled );
 //    static LEDControl::fade_effect_t fade_effect_load( void );
 
