@@ -40,8 +40,8 @@ EventHandlerResult EEPROMKeymap::onSetup() {
 void EEPROMKeymap::setup( void ) {
   result_t result = RESULT_ERR;
 
-  max_layers_ = LAYERS_COUNT;
-  layer_count = LAYERS_COUNT;
+  max_layers_ = APP_LAYERS_CNT;
+  layer_count = APP_LAYERS_CNT;
   if (::EEPROMSettings.ignoreHardcodedLayers()) {
     Layer.getKey = getKey;
   } else {

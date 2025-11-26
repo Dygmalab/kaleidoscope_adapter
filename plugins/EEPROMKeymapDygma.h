@@ -36,7 +36,7 @@ class EEPROMKeymap : public kaleidoscope::Plugin {
 
   typedef struct PACK
   {
-      key_config_t keys[ LAYERS_COUNT * Runtime.device().numKeys() ];
+      key_config_t keys[ APP_LAYERS_CNT * Runtime.device().numKeys() ];
   } keymap_config_t;
 
  public:
