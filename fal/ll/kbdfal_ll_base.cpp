@@ -23,14 +23,15 @@
 #include "KbdInterface.h"
 #include "LEDControlDygma.h"
 #include "MouseKeysDygma.h"
-#include "QukeysDygma.h"
+//#include "QukeysDygma.h"
 
 // Kaleidoscope
 #include "Kaleidoscope-DynamicMacros.h"
-#include "Kaleidoscope-DynamicSuperKeys.h"
+//#include "Kaleidoscope-DynamicSuperKeys.h"
 #include "Kaleidoscope-FocusSerial.h"
 //#include "Kaleidoscope-IdleLEDsDefy.h"
 #include "IdleLEDsDygma.h"
+#include "Kaleidoscope-KeyRoleManager.h"
 #include "Kaleidoscope-LayerFocus.h"
 //#include "Kaleidoscope-MagicCombo.h"
 //#include "Kaleidoscope-MouseKeys.h"
@@ -60,9 +61,9 @@ KEYMAPS
 KALEIDOSCOPE_INIT_PLUGINS
 (
     EEPROMSettings,
-    EEPROMKeymap, FocusSettingsCommand, FocusEEPROMCommand, DynamicSuperKeys,
+    EEPROMKeymap, FocusSettingsCommand, FocusEEPROMCommand, keyRoleManager,
     LEDControl,
-    IdleLEDsDygma,PersistentIdleDygmaLEDs, KeyboardFocus, Qukeys, DynamicMacros,
+    IdleLEDsDygma,PersistentIdleDygmaLEDs, KeyboardFocus, DynamicMacros,
     /*SideFlash,*/ Focus, MouseKeys, OneShot, LayerFocus,
     HostPowerManagement,
     /*Keyboard API interface*/
