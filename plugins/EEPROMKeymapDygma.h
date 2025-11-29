@@ -63,7 +63,7 @@ class EEPROMKeymap : public kaleidoscope::Plugin {
   static void updateKey(uint16_t base_pos, Key key);
 
  private:
-  static keymap_config_t * p_keymap_config;
+  static const keymap_config_t * p_keymap_config;
 
   static uint16_t keymap_base_;
   static uint8_t max_layers_;

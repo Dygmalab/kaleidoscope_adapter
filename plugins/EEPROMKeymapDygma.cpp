@@ -26,7 +26,7 @@
 
 namespace kaleidoscope {
 namespace plugin {
-EEPROMKeymap::keymap_config_t * EEPROMKeymap::p_keymap_config = nullptr;
+const EEPROMKeymap::keymap_config_t * EEPROMKeymap::p_keymap_config = nullptr;
 uint16_t EEPROMKeymap::keymap_base_;
 uint8_t EEPROMKeymap::max_layers_;
 uint8_t EEPROMKeymap::progmem_layers_;
