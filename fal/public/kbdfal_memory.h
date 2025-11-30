@@ -32,6 +32,7 @@ extern "C" {
         KBDMEM_ITEM_TYPE_MOUSEKEYS,
         KBDMEM_ITEM_TYPE_KEYMAP,
         KBDMEM_ITEM_TYPE_KEYROLE,
+        KBDMEM_ITEM_TYPE_SUPERKEY,
     } kbdmem_item_type_t;
 
 #ifdef __cplusplus
