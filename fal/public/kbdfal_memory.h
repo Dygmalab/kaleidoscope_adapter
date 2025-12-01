@@ -33,6 +33,7 @@ extern "C" {
         KBDMEM_ITEM_TYPE_KEYMAP,
         KBDMEM_ITEM_TYPE_KEYROLE,
         KBDMEM_ITEM_TYPE_SUPERKEY,
+        KBDMEM_ITEM_TYPE_MACROS,
     } kbdmem_item_type_t;
 
 #ifdef __cplusplus

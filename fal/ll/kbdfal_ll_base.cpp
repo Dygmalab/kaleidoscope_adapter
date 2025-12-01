@@ -18,6 +18,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "DynamicMacrosDygma.h"
 #include "EEPROMKeymapDygma.h"
 #include "kbdfal_ll_base.h"
 #include "KbdInterface.h"
@@ -26,7 +27,7 @@
 //#include "QukeysDygma.h"
 
 // Kaleidoscope
-#include "Kaleidoscope-DynamicMacros.h"
+//#include "Kaleidoscope-DynamicMacros.h"
 //#include "Kaleidoscope-DynamicSuperKeys.h"
 #include "Kaleidoscope-FocusSerial.h"
 //#include "Kaleidoscope-IdleLEDsDefy.h"
