@@ -315,8 +315,7 @@ EventHandlerResult MouseKeys_::onFocusEvent(const char *command)
       ::Focus.read(auxspeedLimit);
       setSpeedLimit(auxspeedLimit);
 
-      Runtime.storage().update(storage_base_ + 9, auxspeedLimit);
-      Runtime.storage().commit();
+      mem_speed_limit_save( auxspeedLimit );
     }
   }
 
