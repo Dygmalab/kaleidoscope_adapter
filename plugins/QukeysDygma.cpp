@@ -39,8 +39,6 @@
 namespace kaleidoscope {
 namespace plugin {
 
-  uint16_t Qukeys::storage_base_;
-
 // This is the event handler. It ignores certain events, but mostly just adds
 // them to the Qukeys event queue.
 EventHandlerResult Qukeys::onKeyswitchEvent(Key& key, KeyAddr k, uint8_t key_state) {
@@ -606,13 +604,6 @@ EventHandlerResult Qukeys::onFocusEvent(const char *command)
 EventHandlerResult Qukeys::onSetup()
 {
   result_t result = RESULT_ERR;
-
-  uint16_t size = 5;
-  Qukeys::storage_base_ = ::EEPROMSettings.requestSlice(size);
-//  uint16_t hold;
-//  uint8_t overlap;
-//  uint8_t minimum;
-//  uint8_t prior;
 
   result = kbdfal_ll_memory_item_request( KBDMEM_ITEM_TYPE_QUKEYS, (const void **)&p_Qukeys_config );
   ASSERT_DYGMA( result == RESULT_OK, "kbdfal_ll_memory_item_request failed" );

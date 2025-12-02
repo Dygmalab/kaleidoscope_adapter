@@ -20,7 +20,6 @@
 #include "kbd_core.h"
 
 #include "kaleidoscope/Runtime.h"
-#include <Kaleidoscope-EEPROM-Settings.h>
 #include "kaleidoscope/plugin/MouseKeys/MouseKeyDefs.h"
 #include "kaleidoscope/plugin/MouseKeys/MouseWarpModes.h"
 #include "kaleidoscope/plugin/MouseKeys/MouseWrapper.h"
@@ -62,7 +61,6 @@ class MouseKeys_ : public kaleidoscope::Plugin {
   static uint16_t move_start_time_;
   static uint16_t accel_start_time_;
   static uint16_t wheel_start_time_;
-  static uint16_t storage_base_;
 
   static void scrollWheel(uint8_t keyCode);
 

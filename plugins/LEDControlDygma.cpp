@@ -15,111 +15,22 @@
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "EEPROM-Settings.h"
-//#include "IdleLEDsDefy.h"
-//#include "IdleLEDsDygma.h"
-//#include "Kaleidoscope-FocusSerial.h"
-//#include "Kaleidoscope-LEDControl.h"
 #include "kaleidoscope/keyswitch_state.h"
-//#include "kaleidoscope_internal/LEDModeManager.h"
 #include "LEDControlDygma.h"
 
 using namespace kaleidoscope::internal; // NOLINT(build/namespaces)
-
-//void keypress_handle(void)
-//{
-//    IdleLEDsDygma.reset_timers();
-//}
 
 namespace kaleidoscope
 {
 namespace plugin
 {
 
-uint16_t LEDControl::settings_base_ = 0;
-//static constexpr uint8_t uninitialized_mode_id = 255;
-//uint8_t LEDControl::fade_effect = 0;
-//uint8_t LEDControl::mode_id = uninitialized_mode_id;
-//uint8_t LEDControl::num_led_modes_ = LEDModeManager::numLEDModes();
-//LEDMode *LEDControl::cur_led_mode_ = nullptr;
-//uint8_t LEDControl::syncDelay = 32;
-//uint16_t LEDControl::syncTimer = 0;
-//bool LEDControl::enabled_ = true;
 Key LEDControl::pending_next_prev_key_ = Key_NoKey;
-//uint8_t user_effects = 3; // Battery status, advertising mode.
-//bool LEDControl::force = false;
-
 kbdapi_led_effect_action_t LEDControl::led_effect_action = KBDAPI_LED_EFFECT_ACTION_NONE;
 
 LEDControl::LEDControl(void)
 {
 }
-
-//void LEDControl::set_force_mode(bool status)
-//{
-//    force = status;
-//}
-
-//void LEDControl::next_mode(void)
-//{
-//    mode_id++;
-//
-//    if (mode_id >= num_led_modes_ - user_effects)
-//    {
-//        return set_mode(0);
-//    }
-//
-//    return set_mode(mode_id);
-//}
-//
-//void LEDControl::prev_mode(void)
-//{
-//    if (mode_id == 0)
-//    {
-//        // wrap around
-//        mode_id = num_led_modes_ - user_effects;
-//    }
-//    else
-//    {
-//        mode_id--;
-//    }
-//
-//    return set_mode(mode_id);
-//}
-//
-//void LEDControl::set_mode(uint8_t mode_)
-//{
-//    if (mode_ >= num_led_modes_) return;
-//
-//    mode_id = mode_;
-//
-//    // Cache the LED mode
-//    //
-//    cur_led_mode_ = LEDModeManager::getLEDMode(mode_id);
-//
-//    refreshAll();
-//
-//    kaleidoscope::Hooks::onLEDModeChange();
-//}
-
-//void LEDControl::activate(LEDModeInterface *plugin)
-//{
-//    for (uint8_t i = 0; i < num_led_modes_; i++)
-//    {
-//
-//        led_mode_management::LEDModeFactory fac;
-//
-//        LEDModeManager::retreiveLEDModeFactoryFromPROGMEM(i, fac);
-//
-//        if (fac.isAssociatedWithPlugin(plugin))
-//        {
-//            set_mode(i);
-//            return;
-//        }
-//    }
-//}
-
-
 
 void LEDControl::hook_trigger( kbdapi_led_effect_action_t action )
 {
@@ -148,129 +59,15 @@ INLINE void LEDControl::leds_toggle( void )
     hook_trigger( KBDAPI_LED_EFFECT_ACTION_TOGGLE );
 }
 
-//void LEDControl::disable()
-//{
-//#warning "Think about this"
-////    set_all_leds_to(CRGB(0, 0, 0));
-//    enabled_ = false;
-////    Runtime.device().syncLeds();
-//
-//    hook_trigger( KBDAPI_LED_EFFECT_ACTION_DISABLE );
-//}
-//
-//void LEDControl::enable()
-//{
-//    enabled_ = true;
-////    refreshAll();
-////    Runtime.device().syncLeds();
-//
-//    hook_trigger( KBDAPI_LED_EFFECT_ACTION_ENABLE );
-//}
-
 kbdapi_led_effect_action_t LEDControl::getCurrentAction(void)
 {
     return led_effect_action;
 }
 
-//void LEDControl::set_all_leds_to(uint8_t r, uint8_t g, uint8_t b)
-//{
-//    if (!Runtime.has_leds) return;
-//
-//    cRGB color;
-//    color.r = r;
-//    color.g = g;
-//    color.b = b;
-//    set_all_leds_to(color);
-//}
-//
-//void LEDControl::set_all_leds_to(cRGB color)
-//{
-//    for (auto led_index : Runtime.device().LEDs().all())
-//    {
-//        setCrgbAt(led_index.offset(), color);
-//    }
-//}
-
-//void LEDControl::setCrgbAt(uint8_t led_index, cRGB crgb)
-//{
-//    Runtime.device().setCrgbAt(led_index, crgb);
-//}
-//
-//void LEDControl::setCrgbAt(KeyAddr key_addr, cRGB color)
-//{
-//    Runtime.device().setCrgbAt(key_addr, color);
-//}
-//
-//cRGB LEDControl::getCrgbAt(uint8_t led_index)
-//{
-//    return Runtime.device().getCrgbAt(led_index);
-//}
-//cRGB LEDControl::getCrgbAt(KeyAddr key_addr)
-//{
-//    return Runtime.device().getCrgbAt(Runtime.device().getLedIndex(key_addr));
-//}
-
-//void LEDControl::syncLeds(void)
-//{
-//    if (force) return;
-//    if (!enabled_) return;
-//
-//    Runtime.device().syncLeds();
-//}
-
-//void LEDControl::fade_effect_save( fade_effect_t fade_is_enabled )
-//{
-//    Runtime.storage().put(settings_base_, fade_is_enabled );
-//    Runtime.storage().commit();
-//}
-
-//LEDControl::fade_effect_t LEDControl::fade_effect_load( void )
-//{
-//    fade_effect_t fade_is_enabled;
-//
-//    Runtime.storage().get(settings_base_, fade_is_enabled);
-//
-//    return fade_is_enabled;
-//}
-
 kaleidoscope::EventHandlerResult LEDControl::onSetup()
 {
-//    LEDControl::fade_effect_t fade_is_enabled;
-    settings_base_ = kaleidoscope::plugin::EEPROMSettings::requestSlice(sizeof(uint8_t));
-
-//    Runtime.storage().get(settings_base_, fade_is_enabled);
-    // For now lest think that if one block is invalid restart everything
-//    if (fade_is_enabled == 0xFF)
-//    {
-//        fade_effect_save( 0 );
-//    }
-
-//    set_all_leds_to({0, 0, 0});
-
-#warning "What is the setupPersistentLEDModes for?"
-//    LEDModeManager::setupPersistentLEDModes();
-
-//    if (mode_id == uninitialized_mode_id)
-//    {
-//        set_mode(0);
-//    }
-
     return EventHandlerResult::OK;
 }
-
-//void LEDControl::disable()
-//{
-//    set_all_leds_to(CRGB(0, 0, 0));
-//    enabled_ = false;
-//    Runtime.device().syncLeds();
-//}
-//
-//void LEDControl::enable()
-//{
-//    enabled_ = true;
-//    refreshAll();
-//    Runtime.device().syncLeds();
-//}
 
 kaleidoscope::EventHandlerResult LEDControl::onKeyswitchEvent(Key &mappedKey, KeyAddr key_addr, uint8_t keyState)
 {
@@ -278,8 +75,6 @@ kaleidoscope::EventHandlerResult LEDControl::onKeyswitchEvent(Key &mappedKey, Ke
 
     if (keyToggledOn(keyState))
     {
-//        keypress_handle();
-
         if (mappedKey == Key_LEDEffectNext || mappedKey == Key_LEDEffectPrevious)
         {
             // Handling of these keys is delayed into `beforeReportingState`
@@ -288,10 +83,6 @@ kaleidoscope::EventHandlerResult LEDControl::onKeyswitchEvent(Key &mappedKey, Ke
         }
         else if (mappedKey == Key_LEDToggle)
         {
-//            if (enabled_)
-//                disable();
-//            else
-//                enable();
             leds_toggle();
         }
     }
@@ -301,8 +92,6 @@ kaleidoscope::EventHandlerResult LEDControl::onKeyswitchEvent(Key &mappedKey, Ke
 
 kaleidoscope::EventHandlerResult LEDControl::beforeReportingState(void)
 {
-//    if (!enabled_) return kaleidoscope::EventHandlerResult::OK;
-
     if (pending_next_prev_key_ != Key_NoKey)
     {
         bool is_shifted =
@@ -319,32 +108,8 @@ kaleidoscope::EventHandlerResult LEDControl::beforeReportingState(void)
         pending_next_prev_key_ = Key_NoKey;
     }
 
-#warning "Solve this"
-//    if (Runtime.hasTimeExpired(syncTimer, syncDelay))
-//    {
-//        syncLeds();
-//        syncTimer += syncDelay;
-//        update();
-//    }
-
     return kaleidoscope::EventHandlerResult::OK;
 }
-
-//void LEDControl::refreshAll()
-//{
-//#warning "refreshAll replacement needed"
-//
-//    if (!Runtime.has_leds) return;
-//
-////    if (mode_id < num_led_modes_ - user_effects)
-////    {
-////        if (!enabled_) return;
-////    }
-////
-////    set_all_leds_to({0, 0, 0});
-////
-////    if (cur_led_mode_ != nullptr) cur_led_mode_->onActivate();
-//}
 
 } // namespace plugin
 } // namespace kaleidoscope

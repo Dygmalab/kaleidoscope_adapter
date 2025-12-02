@@ -31,7 +31,6 @@ namespace kaleidoscope
 
     const DynamicMacros::macros_config_t * DynamicMacros::p_macros_config = nullptr;
 
-    uint16_t DynamicMacros::storage_base_;
     uint16_t DynamicMacros::map_[];
 
     static void playMacroKeyswitchEvent(Key key, uint8_t keyswitch_state,
@@ -341,8 +340,6 @@ namespace kaleidoscope
 
       result = kbdfal_ll_memory_item_request( KBDMEM_ITEM_TYPE_MACROS, (const void **)&p_macros_config );
       ASSERT_DYGMA( result == RESULT_OK, "kbdfal_ll_memory_item_request failed" );
-
-      storage_base_ = ::EEPROMSettings.requestSlice(2048);
 
       updateDynamicMacroCache();
 

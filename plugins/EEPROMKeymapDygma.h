@@ -36,6 +36,7 @@ class EEPROMKeymap : public kaleidoscope::Plugin {
 
   typedef struct PACK
   {
+      bool_t ignore_hardcoded_layers;
       key_config_t keys[ APP_LAYERS_CNT * Runtime.device().numKeys() ];
   } keymap_config_t;
 
@@ -50,12 +51,7 @@ class EEPROMKeymap : public kaleidoscope::Plugin {
   EventHandlerResult onSetup();
   EventHandlerResult onFocusEvent(const char *command);
 
-#warning "Move processing of this function into onSetup when EEPROM is solved"
-  static void setup( void );
-
-//  static void max_layers(uint8_t max);
-
-  static uint16_t keymap_base(void);
+  static const EEPROMKeymap::keymap_config_t * getKeymapConfig(void);
 
   static Key getKey(uint8_t layer, KeyAddr key_addr);
   static Key getKeyExtended(uint8_t layer, KeyAddr key_addr);
@@ -65,7 +61,6 @@ class EEPROMKeymap : public kaleidoscope::Plugin {
  private:
   static const keymap_config_t * p_keymap_config;
 
-  static uint16_t keymap_base_;
   static uint8_t max_layers_;
   static uint8_t progmem_layers_;
 
@@ -73,6 +68,7 @@ class EEPROMKeymap : public kaleidoscope::Plugin {
   static void printKey(Key key);
   static void dumpKeymap(uint8_t layers, Key(*getkey)(uint8_t, KeyAddr));
 
+  static void cfgmem_ignore_hardcoded_layers_save( bool_t ignore_hardcoded_layers );
   static void cfgmem_key_save( const key_config_t * p_key_config, key_config_t * p_key );
 };
 }

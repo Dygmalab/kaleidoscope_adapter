@@ -20,7 +20,6 @@
 #include "kbd_core.h"
 
 #include "kaleidoscope/Runtime.h"
-#include <Kaleidoscope-EEPROM-Settings.h>
 #include <Kaleidoscope-Ranges.h>
 
 #include "kaleidoscope/plugin/Macros/MacroSteps.h"

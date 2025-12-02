@@ -42,7 +42,6 @@ uint8_t MouseKeys_::mouseMoveIntent;
 uint16_t MouseKeys_::move_start_time_;
 uint16_t MouseKeys_::accel_start_time_;
 uint16_t MouseKeys_::wheel_start_time_;
-uint16_t MouseKeys_::storage_base_;
 
 void MouseKeys_::setWarpGridSize(uint8_t grid_size) {
   MouseWrapper.warp_grid_size = grid_size;
@@ -327,16 +326,6 @@ EventHandlerResult MouseKeys_::onSetup(void) {
 
   kaleidoscope::Runtime.hid().mouse().setup();
   kaleidoscope::Runtime.hid().absoluteMouse().setup();
-
-  uint8_t size = 10 * sizeof(uint8_t);
-  MouseKeys_::storage_base_ = ::EEPROMSettings.requestSlice(size);
-//  uint8_t spd;
-//  uint16_t spdDelay;
-//  uint8_t accspd;
-//  uint16_t accDelay;
-//  uint8_t wheelspd;
-//  uint16_t wheelDlay;
-//  uint8_t spdLimit;
 
   result = kbdfal_ll_memory_item_request( KBDMEM_ITEM_TYPE_MOUSEKEYS, (const void **)&p_MouseKeys_config );
   ASSERT_DYGMA( result == RESULT_OK, "kbdfal_ll_memory_item_request failed" );

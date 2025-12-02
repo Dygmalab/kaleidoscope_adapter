@@ -24,29 +24,18 @@
 #include "KbdInterface.h"
 #include "LEDControlDygma.h"
 #include "MouseKeysDygma.h"
-//#include "QukeysDygma.h"
 
 // Kaleidoscope
-//#include "Kaleidoscope-DynamicMacros.h"
-//#include "Kaleidoscope-DynamicSuperKeys.h"
 #include "Kaleidoscope-FocusSerial.h"
-//#include "Kaleidoscope-IdleLEDsDefy.h"
-#include "IdleLEDsDygma.h"
 #include "Kaleidoscope-KeyRoleManager.h"
 #include "Kaleidoscope-LayerFocus.h"
-//#include "Kaleidoscope-MagicCombo.h"
-//#include "Kaleidoscope-MouseKeys.h"
 #include "Kaleidoscope.h"
 
 #include "kaleidoscope/device/dygma/keyboardManager/universalModules/Focus.h"
 
 // Support for host power management (suspend & wakeup)
 #include "Kaleidoscope-HostPowerManagement.h"
-
 #include "Kaleidoscope-OneShot.h"
-//#include "Kaleidoscope-Qukeys.h"
-
-// #include "LED-CapsLockLight.h"
 
 #ifndef KALEIDOSCOPE_ADAPTER_KEYMAP_DEFAULT
 #error "Default Kaleidoscope Adapter Keymap is not specified"
@@ -57,14 +46,10 @@ KEYMAPS
     KALEIDOSCOPE_ADAPTER_KEYMAP_DEFAULT
 );
 
-// kaleidoscope::plugin::EEPROMPadding JointPadding(8);
-
 KALEIDOSCOPE_INIT_PLUGINS
 (
-    EEPROMSettings,
-    EEPROMKeymap, FocusSettingsCommand, FocusEEPROMCommand, keyRoleManager,
-    LEDControl,
-    IdleLEDsDygma,PersistentIdleDygmaLEDs, KeyboardFocus, DynamicMacros,
+    EEPROMKeymap, keyRoleManager,
+    LEDControl, KeyboardFocus, DynamicMacros,
     /*SideFlash,*/ Focus, MouseKeys, OneShot, LayerFocus,
     HostPowerManagement,
     /*Keyboard API interface*/

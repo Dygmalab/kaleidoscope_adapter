@@ -19,40 +19,41 @@
 #include "EEPROMKeymapDygma.h"
 #include "kbdfal_ll_memory.h"
 
-#include <Kaleidoscope-EEPROM-Settings.h>
-//#include <Kaleidoscope-EEPROM-Keymap.h>
 #include <Kaleidoscope-FocusSerial.h>
 #include "kaleidoscope/layers.h"
 
 namespace kaleidoscope {
 namespace plugin {
 const EEPROMKeymap::keymap_config_t * EEPROMKeymap::p_keymap_config = nullptr;
-uint16_t EEPROMKeymap::keymap_base_;
 uint8_t EEPROMKeymap::max_layers_;
 uint8_t EEPROMKeymap::progmem_layers_;
 
 EventHandlerResult EEPROMKeymap::onSetup() {
-  ::EEPROMSettings.onSetup();
-  progmem_layers_ = layer_count;
-  return EventHandlerResult::OK;
-}
-
-void EEPROMKeymap::setup( void ) {
   result_t result = RESULT_ERR;
+
+  progmem_layers_ = layer_count;        /* Save the number of default layers resolved at the compile time and stored in layer_count at the program start */
+
+  result = kbdfal_ll_memory_item_request( KBDMEM_ITEM_TYPE_KEYMAP, (const void **)&p_keymap_config );
+  ASSERT_DYGMA( result == RESULT_OK, "kbdfal_ll_memory_item_request failed" );
+
+  /* Check if the configuration is valid */
+  if( ( (uint8_t)p_keymap_config->ignore_hardcoded_layers ) == 0xFF )
+  {
+      cfgmem_ignore_hardcoded_layers_save( false );
+  }
 
   max_layers_ = APP_LAYERS_CNT;
   layer_count = APP_LAYERS_CNT;
-  if (::EEPROMSettings.ignoreHardcodedLayers()) {
+  if ( p_keymap_config->ignore_hardcoded_layers == true ) {
     Layer.getKey = getKey;
   } else {
     layer_count += progmem_layers_;
     Layer.getKey = getKeyExtended;
   }
 
-  result = kbdfal_ll_memory_item_request( KBDMEM_ITEM_TYPE_KEYMAP, (const void **)&p_keymap_config );
-  ASSERT_DYGMA( result == RESULT_OK, "kbdfal_ll_memory_item_request failed" );
 
-  keymap_base_ = ::EEPROMSettings.requestSlice(max_layers_ * Runtime.device().numKeys() * 2);
+
+  return EventHandlerResult::OK;
 
   UNUSED( result );
 }
@@ -77,8 +78,8 @@ Key EEPROMKeymap::getKeyExtended(uint8_t layer, KeyAddr key_addr) {
   return getKey(layer - progmem_layers_, key_addr);
 }
 
-uint16_t EEPROMKeymap::keymap_base(void) {
-  return keymap_base_;
+const EEPROMKeymap::keymap_config_t * EEPROMKeymap::getKeymapConfig(void) {
+  return p_keymap_config;
 }
 
 void EEPROMKeymap::updateKey(uint16_t base_pos, Key key) {
@@ -109,12 +110,13 @@ EventHandlerResult EEPROMKeymap::onFocusEvent(const char *command) {
 
   if (strcmp_P(command + 7, PSTR("onlyCustom")) == 0) {
     if (::Focus.isEOL()) {
-      ::Focus.send((uint8_t)::EEPROMSettings.ignoreHardcodedLayers());
+      ::Focus.send((uint8_t)p_keymap_config->ignore_hardcoded_layers);
     } else {
-      bool v;
+      bool_t v;
 
       ::Focus.read((uint8_t &)v);
-      ::EEPROMSettings.ignoreHardcodedLayers(v);
+
+      cfgmem_ignore_hardcoded_layers_save( v );
 
       layer_count = max_layers_;
       if (v) {
@@ -156,7 +158,6 @@ EventHandlerResult EEPROMKeymap::onFocusEvent(const char *command) {
       updateKey(i, k);
       i++;
     }
-    Runtime.storage().commit();
   }
 
   return EventHandlerResult::EVENT_CONSUMED;
@@ -165,6 +166,16 @@ EventHandlerResult EEPROMKeymap::onFocusEvent(const char *command) {
 /****************************************************/
 /*                   Config Memory                  */
 /****************************************************/
+
+void EEPROMKeymap::cfgmem_ignore_hardcoded_layers_save( bool_t ignore_hardcoded_layers )
+{
+    result_t result = RESULT_ERR;
+
+    result = kbdfal_ll_memory_data_save( &p_keymap_config->ignore_hardcoded_layers, &ignore_hardcoded_layers, sizeof( p_keymap_config->ignore_hardcoded_layers ) );
+    ASSERT_DYGMA( result == RESULT_OK, "kbdfal_ll_memory_data_save failed" );
+
+    UNUSED( result );
+}
 
 void EEPROMKeymap::cfgmem_key_save( const key_config_t * p_key_config, key_config_t * p_key )
 {
