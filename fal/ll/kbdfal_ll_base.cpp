@@ -18,6 +18,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "BaseDygma.h"
 #include "DynamicMacrosDygma.h"
 #include "EEPROMKeymapDygma.h"
 #include "kbdfal_ll_base.h"
@@ -32,6 +33,7 @@
 #include "Kaleidoscope.h"
 
 #include "kaleidoscope/device/dygma/keyboardManager/universalModules/Focus.h"
+#include "kaleidoscope/Runtime.h"
 
 // Support for host power management (suspend & wakeup)
 #include "Kaleidoscope-HostPowerManagement.h"
@@ -52,6 +54,8 @@ KALEIDOSCOPE_INIT_PLUGINS
     LEDControl, KeyboardFocus, DynamicMacros,
     /*SideFlash,*/ Focus, MouseKeys, OneShot, LayerFocus,
     HostPowerManagement,
+    /*Dygma base plugin*/
+    BaseDygma,
     /*Keyboard API interface*/
     KbdInterface
 );
@@ -61,6 +65,16 @@ result_t kbdfal_ll_base_init( void )
     Kaleidoscope.setup();
 
     return RESULT_OK;
+}
+
+result_t kbdfal_ll_base_key_report_enable( void )
+{
+    return BaseDygma.key_report_enable();
+}
+
+result_t kbdfal_ll_base_key_report_disable( void )
+{
+    return BaseDygma.key_report_disable();
 }
 
 result_t kbdfal_ll_base_kbdif_set( kbdif_t * p_kbdif )
