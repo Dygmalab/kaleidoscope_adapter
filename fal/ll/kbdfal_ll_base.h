@@ -31,6 +31,8 @@ extern "C" {
 #include "kbd_base.h"
 
 extern result_t kbdfal_ll_base_init( void );
+extern result_t kbdfal_ll_base_key_report_enable( void );
+extern result_t kbdfal_ll_base_key_report_disable( void );
 extern result_t kbdfal_ll_base_kbdif_set( kbdif_t * p_kbdif );
 
 #ifdef __cplusplus
