@@ -195,7 +195,10 @@ bool Qukeys::processQueue() {
 
   // Now we know that the first event is a key press, and that it's a qukey. In
   // addition, `queue_head_` now contains the primary and secondary Key values
-  // for that qukey.
+  // for that qukey. As long as the Qukey is at the head of the event queue, we
+  // Ask system not to go to sleep until the situation is resolved.
+
+  kbdpwr_sleep_postpone();
 
   // This variable will be used to record the index in the event queue of the
   // first subsequent key press (after the qukey), if any.
@@ -327,6 +330,9 @@ void Qukeys::flushEvent(Key event_key) {
   flushing_queue_ = true;
   handleKeyswitchEvent(event_key, queue_head_addr, keyswitch_state);
   flushing_queue_ = false;
+
+  /* Ask for another iteration as soon as possible */
+  kbdpwr_sleep_postpone();
 }
 
 
