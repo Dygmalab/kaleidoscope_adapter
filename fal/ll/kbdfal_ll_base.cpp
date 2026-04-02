@@ -25,6 +25,7 @@
 #include "KbdInterface.h"
 #include "LEDControlDygma.h"
 #include "MouseKeysDygma.h"
+#include "OneShotDygma.h"
 
 // Kaleidoscope
 #include "Kaleidoscope-FocusSerial.h"
@@ -37,7 +38,6 @@
 
 // Support for host power management (suspend & wakeup)
 #include "Kaleidoscope-HostPowerManagement.h"
-#include "Kaleidoscope-OneShot.h"
 
 #ifndef KALEIDOSCOPE_ADAPTER_KEYMAP_DEFAULT
 #error "Default Kaleidoscope Adapter Keymap is not specified"

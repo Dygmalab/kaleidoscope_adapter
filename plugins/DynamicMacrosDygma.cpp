@@ -18,7 +18,7 @@
 #include "DynamicMacrosDygma.h"
 #include "kbdfal_ll_memory.h"
 
-#include <Kaleidoscope-OneShot.h>
+#include "OneShotDygma.h"
 
 #include "Kaleidoscope-FocusSerial.h"
 #include "kaleidoscope/key_events.h"
