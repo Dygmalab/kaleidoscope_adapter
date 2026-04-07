@@ -47,7 +47,7 @@ class OneShot : public kaleidoscope::Plugin {
   static bool isSticky(Key key);
   static void cancel(bool with_stickies = false);
 
-  static uint16_t time_out;
+  static uint16_t one_shot_time_out;
   static int16_t double_tap_time_out;
   static uint16_t hold_time_out;
 
@@ -93,7 +93,8 @@ class OneShot : public kaleidoscope::Plugin {
   } key_state_t;
   static key_state_t state_[ONESHOT_KEY_COUNT];
 
-  static uint16_t start_time_;
+  static kbdtimer_t one_shot_timer;
+  static kbdtimer_t hold_timer;
   static Key prev_key_;
   static bool should_cancel_;
   static bool should_cancel_stickies_;
@@ -101,12 +102,13 @@ class OneShot : public kaleidoscope::Plugin {
   static void injectNormalKey(uint8_t idx, uint8_t key_state);
   static void activateOneShot(uint8_t idx);
   static void cancelOneShot(uint8_t idx);
+  static void timersSet(void);
 
   static bool isOneShotKey_(Key key) {
     return key.getRaw() >= ranges::OS_FIRST && key.getRaw() <= ranges::OS_LAST;
   }
   static bool hasTimedOut() {
-    return Runtime.hasTimeExpired(start_time_, time_out);
+    return kbdtimer_check( &one_shot_timer );
   }
 };
 }

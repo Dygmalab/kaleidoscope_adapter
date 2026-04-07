@@ -25,8 +25,9 @@ namespace plugin {
 
 // ---- state ---------
 
-uint16_t OneShot::start_time_ = 0;
-uint16_t OneShot::time_out = 2500;
+kbdtimer_t OneShot::one_shot_timer = 0;
+kbdtimer_t OneShot::hold_timer = 0;
+uint16_t OneShot::one_shot_time_out = 2500;
 uint16_t OneShot::hold_time_out = 250;
 int16_t OneShot::double_tap_time_out = -1;
 OneShot::key_state_t OneShot::state_[OneShot::ONESHOT_KEY_COUNT];
@@ -78,6 +79,16 @@ void OneShot::cancelOneShot(uint8_t idx) {
   injectNormalKey(idx, WAS_PRESSED);
 }
 
+void OneShot::timersSet(void)
+{
+    /* Set One Shot timer */
+    uint16_t dtto = (double_tap_time_out == -1) ? one_shot_time_out : double_tap_time_out;
+    kbdtimer_set_ms( &one_shot_timer, dtto );
+
+    /* Set the Hold timer */
+    kbdtimer_set_ms( &hold_timer, hold_time_out );
+}
+
 EventHandlerResult OneShot::onKeyswitchEvent(Key &mapped_key, KeyAddr key_addr, uint8_t keyState) {
   uint8_t idx = mapped_key.getRaw() - ranges::OS_FIRST;
 
@@ -92,7 +103,7 @@ EventHandlerResult OneShot::onKeyswitchEvent(Key &mapped_key, KeyAddr key_addr, 
     if (keyToggledOff(keyState)) {
       state_[idx].pressed = false;
     } else if (keyToggledOn(keyState)) {
-      start_time_ = Runtime.millisAtCycleStart();
+      timersSet();
       state_[idx].position = key_addr.toInt();
       state_[idx].pressed = true;
       state_[idx].active = true;
@@ -115,7 +126,7 @@ EventHandlerResult OneShot::onKeyswitchEvent(Key &mapped_key, KeyAddr key_addr, 
     } else {
       if (keyToggledOff(keyState)) {
         state_[idx].pressed = false;
-        if (Runtime.hasTimeExpired(start_time_, hold_time_out)) {
+        if ( kbdtimer_check( &hold_timer ) ) {
           cancelOneShot(idx);
           should_cancel_ = false;
         }
@@ -125,13 +136,12 @@ EventHandlerResult OneShot::onKeyswitchEvent(Key &mapped_key, KeyAddr key_addr, 
         state_[idx].pressed = true;
 
         if (prev_key_ == mapped_key && isStickable(mapped_key)) {
-          uint16_t dtto = (double_tap_time_out == -1) ? time_out : double_tap_time_out;
-          if (!Runtime.hasTimeExpired(start_time_, dtto)) {
+          if ( kbdtimer_check( &one_shot_timer ) ) {
             state_[idx].sticky = true;
             prev_key_ = mapped_key;
           }
         } else {
-          start_time_ = Runtime.millisAtCycleStart();
+          timersSet();
 
           state_[idx].position = key_addr.toInt();
           state_[idx].active = true;
