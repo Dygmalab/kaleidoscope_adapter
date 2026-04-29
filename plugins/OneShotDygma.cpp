@@ -136,7 +136,7 @@ EventHandlerResult OneShot::onKeyswitchEvent(Key &mapped_key, KeyAddr key_addr, 
         state_[idx].pressed = true;
 
         if (prev_key_ == mapped_key && isStickable(mapped_key)) {
-          if ( kbdtimer_check( &one_shot_timer ) ) {
+          if ( kbdtimer_check( &one_shot_timer ) == false ) {
             state_[idx].sticky = true;
             prev_key_ = mapped_key;
           }
