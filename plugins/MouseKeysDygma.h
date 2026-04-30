@@ -58,9 +58,9 @@ class MouseKeys_ : public kaleidoscope::Plugin {
   static const MouseKeys_config_t * p_MouseKeys_config;
 
   static uint8_t mouseMoveIntent;
-  static uint16_t move_start_time_;
-  static uint16_t accel_start_time_;
-  static uint16_t wheel_start_time_;
+  static kbdtimer_t move_start_timer;
+  static kbdtimer_t accel_start_timer;
+  static kbdtimer_t wheel_start_timer;
 
   static void scrollWheel(uint8_t keyCode);
 

@@ -39,9 +39,9 @@ const MouseKeys_::MouseKeys_config_t * MouseKeys_::p_MouseKeys_config = nullptr;
 
 uint8_t MouseKeys_::mouseMoveIntent;
 
-uint16_t MouseKeys_::move_start_time_;
-uint16_t MouseKeys_::accel_start_time_;
-uint16_t MouseKeys_::wheel_start_time_;
+kbdtimer_t MouseKeys_::move_start_timer;
+kbdtimer_t MouseKeys_::accel_start_timer;
+kbdtimer_t MouseKeys_::wheel_start_timer;
 
 void MouseKeys_::setWarpGridSize(uint8_t grid_size) {
   MouseWrapper.warp_grid_size = grid_size;
@@ -52,10 +52,10 @@ void MouseKeys_::setSpeedLimit(uint8_t speed_limit) {
 }
 
 void MouseKeys_::scrollWheel(uint8_t keyCode) {
-  if (!Runtime.hasTimeExpired(wheel_start_time_, p_MouseKeys_config->wheelDelay))
+  if (!kbdtimer_check(&wheel_start_timer))
     return;
 
-  wheel_start_time_ = Runtime.millisAtCycleStart();
+  kbdtimer_set_ms( &wheel_start_timer, p_MouseKeys_config->wheelDelay );
 
   if (keyCode & KEY_MOUSE_UP)
     kaleidoscope::Runtime.hid().mouse().move(0, 0, p_MouseKeys_config->wheelSpeed);
@@ -81,18 +81,18 @@ EventHandlerResult MouseKeys_::beforeReportingState() {
     return EventHandlerResult::OK;
   }
 
-  if (!Runtime.hasTimeExpired(move_start_time_, p_MouseKeys_config->speedDelay))
+  if ( !kbdtimer_check(&move_start_timer) )
     return EventHandlerResult::OK;
 
-  move_start_time_ = Runtime.millisAtCycleStart();
+  kbdtimer_set_ms( &move_start_timer, p_MouseKeys_config->speedDelay );
 
   int8_t moveX = 0, moveY = 0;
 
-  if (Runtime.hasTimeExpired(accel_start_time_, p_MouseKeys_config->accelDelay)) {
+  if ( kbdtimer_check( &accel_start_timer ) ) {
     if (MouseWrapper.accelStep < 255 - p_MouseKeys_config->accelSpeed) {
       MouseWrapper.accelStep += p_MouseKeys_config->accelSpeed;
     }
-    accel_start_time_ = Runtime.millisAtCycleStart();
+    kbdtimer_set_ms( &accel_start_timer, p_MouseKeys_config->accelDelay );
   }
 
   if (mouseMoveIntent & KEY_MOUSE_UP)
@@ -131,9 +131,12 @@ EventHandlerResult MouseKeys_::onKeyswitchEvent(Key &mappedKey, KeyAddr key_addr
     }
   } else if (!(mappedKey.getKeyCode() & KEY_MOUSE_WARP)) {
     if (keyToggledOn(keyState)) {
-      move_start_time_ = Runtime.millisAtCycleStart();
-      accel_start_time_ = Runtime.millisAtCycleStart();
-      wheel_start_time_ = Runtime.millisAtCycleStart() - p_MouseKeys_config->wheelDelay;
+      kbdtimer_set_ms( &move_start_timer, p_MouseKeys_config->speedDelay );
+      kbdtimer_set_ms( &accel_start_timer, p_MouseKeys_config->accelDelay );
+      /* After the Toggle On, there is no delay for the wheel. Let's set it to 0
+       * and ask for another iteration. */
+      wheel_start_timer = 0;
+      kbdpwr_sleep_postpone();
     }
     if (keyIsPressed(keyState)) {
       if (mappedKey.getKeyCode() & KEY_MOUSE_WHEEL) {
