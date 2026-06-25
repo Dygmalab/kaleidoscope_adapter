@@ -26,6 +26,7 @@
 #include "LEDControlDygma.h"
 #include "MouseKeysDygma.h"
 #include "OneShotDygma.h"
+#include "OverlayKeyDygma.h"
 
 // Kaleidoscope
 #include "Kaleidoscope-FocusSerial.h"
@@ -56,6 +57,8 @@ KALEIDOSCOPE_INIT_PLUGINS
     HostPowerManagement,
     /*Dygma base plugin*/
     BaseDygma,
+    /*Overlay key plugin — must precede KbdInterface to consume OVERLAY_KEY events first*/
+    OverlayKey,
     /*Keyboard API interface*/
     KbdInterface
 );
