@@ -37,8 +37,10 @@ extern "C" {
 
 // Packet framing — must match constants.ts in Dygma-Lens
 #define OVERLAY_MAGIC_BYTE       0xAA
-#define PACKET_TYPE_OVERLAY      0x01
+#define PACKET_TYPE_OVERLAY      0x01  // OVERLAY_KEY (superkey with tap/hold/double-tap)
 #define PACKET_TYPE_LAYER        0x02
+#define PACKET_TYPE_OVERLAY_TAP  0x03  // OVERLAY_TAP key (simple tap key)
+#define PACKET_TYPE_OVERLAY_HOLD 0x04  // OVERLAY_HOLD key (simple hold key)
 
 #define OVERLAY_EVENT_RELEASE    0x00
 #define OVERLAY_EVENT_TAP        0x01
@@ -86,9 +88,66 @@ void OverlayKeyDygma::notifyOverlayEvent(uint8_t event_type) {
     }
 }
 
+void OverlayKeyDygma::notifyOverlayTapKey(uint8_t event_type) {
+    NRF_LOG_INFO("OverlayKeyDygma: OVERLAY_TAP key event=0x%02X ble=%d", event_type, (int)ble_connected());
+
+    if (ble_connected()) {
+        uint8_t buf[INPUT_REPORT_LEN_RAW] = {};
+        buf[0] = OVERLAY_MAGIC_BYTE;
+        buf[1] = PACKET_TYPE_OVERLAY_TAP;
+        buf[2] = event_type;
+        HID().SendReport(HID_REPORTID_RAWHID, buf, INPUT_REPORT_LEN_RAW);
+    } else {
+        uint8_t buf[USB_RAW_HID_REPORT_SIZE] = {};
+        buf[0] = OVERLAY_MAGIC_BYTE;
+        buf[1] = PACKET_TYPE_OVERLAY_TAP;
+        buf[2] = event_type;
+        HID().SendReport(HID_REPORTID_RAWHID, buf, USB_RAW_HID_REPORT_SIZE);
+    }
+}
+
+void OverlayKeyDygma::notifyOverlayHoldKey(uint8_t event_type) {
+    NRF_LOG_INFO("OverlayKeyDygma: OVERLAY_HOLD key event=0x%02X ble=%d", event_type, (int)ble_connected());
+
+    if (ble_connected()) {
+        uint8_t buf[INPUT_REPORT_LEN_RAW] = {};
+        buf[0] = OVERLAY_MAGIC_BYTE;
+        buf[1] = PACKET_TYPE_OVERLAY_HOLD;
+        buf[2] = event_type;
+        HID().SendReport(HID_REPORTID_RAWHID, buf, INPUT_REPORT_LEN_RAW);
+    } else {
+        uint8_t buf[USB_RAW_HID_REPORT_SIZE] = {};
+        buf[0] = OVERLAY_MAGIC_BYTE;
+        buf[1] = PACKET_TYPE_OVERLAY_HOLD;
+        buf[2] = event_type;
+        HID().SendReport(HID_REPORTID_RAWHID, buf, USB_RAW_HID_REPORT_SIZE);
+    }
+}
+
 // ---- Overlay key state machine -----------------------------------------------
 
 EventHandlerResult OverlayKeyDygma::onKeyswitchEvent(Key &mapped_key, KeyAddr key_addr, uint8_t key_state) {
+    // Handle OVERLAY_TAP - simple tap key (sends PACKET_TYPE_OVERLAY_TAP)
+    if (mapped_key.getRaw() == kaleidoscope::ranges::OVERLAY_TAP) {
+        if (keyToggledOn(key_state)) {
+            notifyOverlayTapKey(OVERLAY_EVENT_TAP);
+        } else if (keyToggledOff(key_state)) {
+            notifyOverlayTapKey(OVERLAY_EVENT_RELEASE);
+        }
+        return EventHandlerResult::EVENT_CONSUMED;
+    }
+
+    // Handle OVERLAY_HOLD - simple hold key (sends PACKET_TYPE_OVERLAY_HOLD)
+    if (mapped_key.getRaw() == kaleidoscope::ranges::OVERLAY_HOLD) {
+        if (keyToggledOn(key_state)) {
+            notifyOverlayHoldKey(OVERLAY_EVENT_HOLD);
+        } else if (keyToggledOff(key_state)) {
+            notifyOverlayHoldKey(OVERLAY_EVENT_RELEASE);
+        }
+        return EventHandlerResult::EVENT_CONSUMED;
+    }
+
+    // Handle OVERLAY_KEY - original tap/hold/double-tap state machine
     if (mapped_key.getRaw() != kaleidoscope::ranges::OVERLAY_KEY) {
         return EventHandlerResult::OK;
     }
