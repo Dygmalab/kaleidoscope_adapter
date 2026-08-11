@@ -48,6 +48,7 @@ namespace plugin
 
         { .key = ranges::BATTERY_LEVEL,                 .kbdapi_key = KBDAPI_KEY_TYPE_BATTERY_LEVEL },
         { .key = ranges::BLUETOOTH_PAIRING,             .kbdapi_key = KBDAPI_KEY_TYPE_BLUETOOTH_PAIRING },
+        { .key = ranges::OVERLAY_KEY,                   .kbdapi_key = KBDAPI_KEY_TYPE_OVERLAY },
     };
     #define get_key_def( def, id ) _get_def( def, p_key_def_array, key_def_t, key, id )
 
