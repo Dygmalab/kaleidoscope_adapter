@@ -20,7 +20,7 @@
 #include "kaleidoscope/layers.h"
 #include "KeyboardioHID.h"
 #include "ble_hid_service.h"    // INPUT_REPORT_LEN_RAW
-#include "Ble_composite_dev.h"  // ble_connected()
+#include "Ble_manager.h"        // is_connected()
 #include "Adafruit_TinyUSB.h"   // TinyUSBDevice.mounted()
 
 #ifdef __cplusplus
@@ -53,14 +53,14 @@ namespace plugin {
 // ---- HID send helpers -------------------------------------------------------
 
 void OverlayKeyDygma::notifyLayerChange(uint8_t layer) {
-    NRF_LOG_INFO("OverlayKeyDygma: layer=%d ble=%d", layer, (int)ble_connected());
+    NRF_LOG_INFO("OverlayKeyDygma: layer=%d ble=%d", layer, (int)BleManager.is_connected());
 
-    if (ble_connected()) {
-        uint8_t buf[INPUT_REPORT_LEN_RAW] = {};
+    if (BleManager.is_connected() == true) {
+        uint8_t buf[BLE_INPUT_REPORT_LEN_RAW] = {};
         buf[0] = OVERLAY_MAGIC_BYTE;
         buf[1] = PACKET_TYPE_LAYER;
         buf[2] = layer;
-        HID().SendReport(HID_REPORTID_RAWHID, buf, INPUT_REPORT_LEN_RAW);
+        HID().SendReport(HID_REPORTID_RAWHID, buf, BLE_INPUT_REPORT_LEN_RAW);
     } else {
         uint8_t buf[USB_RAW_HID_REPORT_SIZE] = {};
         buf[0] = OVERLAY_MAGIC_BYTE;
@@ -71,14 +71,14 @@ void OverlayKeyDygma::notifyLayerChange(uint8_t layer) {
 }
 
 void OverlayKeyDygma::notifyOverlayEvent(uint8_t event_type) {
-    NRF_LOG_INFO("OverlayKeyDygma: overlay event=0x%02X ble=%d", event_type, (int)ble_connected());
+    NRF_LOG_INFO("OverlayKeyDygma: overlay event=0x%02X ble=%d", event_type, (int)BleManager.is_connected());
 
-    if (ble_connected()) {
-        uint8_t buf[INPUT_REPORT_LEN_RAW] = {};
+    if (BleManager.is_connected() == true) {
+        uint8_t buf[BLE_INPUT_REPORT_LEN_RAW] = {};
         buf[0] = OVERLAY_MAGIC_BYTE;
         buf[1] = PACKET_TYPE_OVERLAY;
         buf[2] = event_type;
-        HID().SendReport(HID_REPORTID_RAWHID, buf, INPUT_REPORT_LEN_RAW);
+        HID().SendReport(HID_REPORTID_RAWHID, buf, BLE_INPUT_REPORT_LEN_RAW);
     } else {
         uint8_t buf[USB_RAW_HID_REPORT_SIZE] = {};
         buf[0] = OVERLAY_MAGIC_BYTE;
@@ -89,14 +89,14 @@ void OverlayKeyDygma::notifyOverlayEvent(uint8_t event_type) {
 }
 
 void OverlayKeyDygma::notifyOverlayTapKey(uint8_t event_type) {
-    NRF_LOG_INFO("OverlayKeyDygma: OVERLAY_TAP key event=0x%02X ble=%d", event_type, (int)ble_connected());
+    NRF_LOG_INFO("OverlayKeyDygma: OVERLAY_TAP key event=0x%02X ble=%d", event_type, (int)BleManager.is_connected());
 
-    if (ble_connected()) {
-        uint8_t buf[INPUT_REPORT_LEN_RAW] = {};
+    if (BleManager.is_connected() == true) {
+        uint8_t buf[BLE_INPUT_REPORT_LEN_RAW] = {};
         buf[0] = OVERLAY_MAGIC_BYTE;
         buf[1] = PACKET_TYPE_OVERLAY_TAP;
         buf[2] = event_type;
-        HID().SendReport(HID_REPORTID_RAWHID, buf, INPUT_REPORT_LEN_RAW);
+        HID().SendReport(HID_REPORTID_RAWHID, buf, BLE_INPUT_REPORT_LEN_RAW);
     } else {
         uint8_t buf[USB_RAW_HID_REPORT_SIZE] = {};
         buf[0] = OVERLAY_MAGIC_BYTE;
@@ -107,14 +107,14 @@ void OverlayKeyDygma::notifyOverlayTapKey(uint8_t event_type) {
 }
 
 void OverlayKeyDygma::notifyOverlayHoldKey(uint8_t event_type) {
-    NRF_LOG_INFO("OverlayKeyDygma: OVERLAY_HOLD key event=0x%02X ble=%d", event_type, (int)ble_connected());
+    NRF_LOG_INFO("OverlayKeyDygma: OVERLAY_HOLD key event=0x%02X ble=%d", event_type, (int)BleManager.is_connected());
 
-    if (ble_connected()) {
-        uint8_t buf[INPUT_REPORT_LEN_RAW] = {};
+    if (BleManager.is_connected() == true) {
+        uint8_t buf[BLE_INPUT_REPORT_LEN_RAW] = {};
         buf[0] = OVERLAY_MAGIC_BYTE;
         buf[1] = PACKET_TYPE_OVERLAY_HOLD;
         buf[2] = event_type;
-        HID().SendReport(HID_REPORTID_RAWHID, buf, INPUT_REPORT_LEN_RAW);
+        HID().SendReport(HID_REPORTID_RAWHID, buf, BLE_INPUT_REPORT_LEN_RAW);
     } else {
         uint8_t buf[USB_RAW_HID_REPORT_SIZE] = {};
         buf[0] = OVERLAY_MAGIC_BYTE;
@@ -195,7 +195,7 @@ EventHandlerResult OverlayKeyDygma::onKeyswitchEvent(Key &mapped_key, KeyAddr ke
 
 EventHandlerResult OverlayKeyDygma::beforeReportingState() {
     // Send initial layer once a HID connection is established
-    if (!initial_sent_ && (ble_connected() || TinyUSBDevice.mounted())) {
+    if (!initial_sent_ && (BleManager.is_connected() == true || TinyUSBDevice.mounted() == true)) {
         initial_sent_ = true;
         notifyLayerChange(Layer.mostRecent());
     }
