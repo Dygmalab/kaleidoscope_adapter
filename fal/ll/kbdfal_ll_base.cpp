@@ -33,7 +33,6 @@
 #include "Kaleidoscope-LayerFocus.h"
 #include "Kaleidoscope.h"
 
-#include "kaleidoscope/device/dygma/keyboardManager/universalModules/Focus.h"
 #include "kaleidoscope/Runtime.h"
 
 // Support for host power management (suspend & wakeup)
@@ -51,7 +50,7 @@ KEYMAPS
 KALEIDOSCOPE_INIT_PLUGINS
 (
     EEPROMKeymap, keyRoleManager,
-    LEDControl, KeyboardFocus, DynamicMacros,
+    LEDControl, DynamicMacros,
     /*SideFlash,*/ Focus, MouseKeys, OneShot, LayerFocus,
     HostPowerManagement,
     /*Dygma base plugin*/
