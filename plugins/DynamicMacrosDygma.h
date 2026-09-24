@@ -31,12 +31,6 @@ namespace plugin {
 
 class DynamicMacros : public kaleidoscope::Plugin {
  public:
-  typedef struct PACK
-  {
-      uint8_t memory[ APP_MACROS_MEMORY_SIZE ];
-  } macros_config_t;
-
- public:
   DynamicMacros(void) {}
 
   EventHandlerResult onKeyswitchEvent(Key &mappedKey, KeyAddr key_addr, uint8_t keyState);
@@ -47,6 +41,11 @@ class DynamicMacros : public kaleidoscope::Plugin {
   void play(uint8_t seq_id);
 
  private:
+
+  typedef struct PACK
+  {
+      uint8_t memory[ APP_MACROS_MEMORY_SIZE ];
+  } macros_config_t;
 
   static const macros_config_t * p_macros_config;
 

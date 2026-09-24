@@ -91,29 +91,6 @@ struct Qukey {
 class Qukeys : public kaleidoscope::Plugin {
 
  public:
-    typedef struct PACK
-    {
-        // The number of milliseconds until a qukey held on its own will take on its
-        // alternate state (or primary state, in the case of a SpaceCadet-type qukey).
-        uint16_t hold_timeout;
-
-        // This variable stores the percentage number between 0 and 99 that determines
-        // how forgiving the plugin is of rollover from a qukey to a modified key.
-        uint8_t overlap_threshold;
-
-        // The minimum number of milliseconds a qukey must be held before it is
-        // allowed to take on its alternate key value (to limit unintended modifiers
-        // for very fast typists).
-        uint8_t minimum_hold_time;
-
-        // The minimum interval in milliseconds between the previous keypress and the
-        // press of a qukey required to make the qukey eligible to take on its
-        // alternate value.
-        uint8_t minimum_prior_interval;
-
-    } Qukeys_config_t;
-
- public:
   // Methods for turning the plugin on and off.
   void activate() {
     active_ = true;
@@ -204,6 +181,29 @@ class Qukeys : public kaleidoscope::Plugin {
 
 
  private:
+
+  typedef struct PACK
+  {
+      // The number of milliseconds until a qukey held on its own will take on its
+      // alternate state (or primary state, in the case of a SpaceCadet-type qukey).
+      uint16_t hold_timeout;
+
+      // This variable stores the percentage number between 0 and 99 that determines
+      // how forgiving the plugin is of rollover from a qukey to a modified key.
+      uint8_t overlap_threshold;
+
+      // The minimum number of milliseconds a qukey must be held before it is
+      // allowed to take on its alternate key value (to limit unintended modifiers
+      // for very fast typists).
+      uint8_t minimum_hold_time;
+
+      // The minimum interval in milliseconds between the previous keypress and the
+      // press of a qukey required to make the qukey eligible to take on its
+      // alternate value.
+      uint8_t minimum_prior_interval;
+
+  } Qukeys_config_t;
+
   // An array of Qukey objects in PROGMEM.
   Qukey const * qukeys_{nullptr};
   uint8_t qukeys_count_{0};

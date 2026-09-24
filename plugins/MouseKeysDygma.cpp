@@ -330,7 +330,7 @@ EventHandlerResult MouseKeys_::onSetup(void) {
   kaleidoscope::Runtime.hid().mouse().setup();
   kaleidoscope::Runtime.hid().absoluteMouse().setup();
 
-  result = kbdfal_ll_memory_item_request( KBDMEM_ITEM_TYPE_MOUSEKEYS, (const void **)&p_MouseKeys_config );
+  result = kbdfal_ll_memory_item_request( (const void **)&p_MouseKeys_config, sizeof( MouseKeys_config_t ) );
   ASSERT_DYGMA( result == RESULT_OK, "kbdfal_ll_memory_item_request failed" );
 
   if( p_MouseKeys_config->speed >= 255 )
