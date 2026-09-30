@@ -18,7 +18,10 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "AutoshiftDygma.h"
 #include "BaseDygma.h"
+#include "CapsWordDygma.h"
+#include "CombosDygma.h"
 #include "DynamicMacrosDygma.h"
 #include "EEPROMKeymapDygma.h"
 #include "kbdfal_ll_base.h"
@@ -50,14 +53,27 @@ KEYMAPS
 
 KALEIDOSCOPE_INIT_PLUGINS
 (
-    EEPROMKeymap, keyRoleManager,
+    EEPROMKeymap,
+    /*CapsWord trigger and Autoshift — must precede keyRoleManager so their own
+      ranges are consumed before the Qukeys queue and the SuperKeys timeline see
+      them. That keeps them out of both delay stages and of the timeline's
+      double delivery.*/
+    /*Combos goes first of all: it matches on physical position, so it must see
+      raw keyswitch events before any plugin can consume them -- including
+      Autoshift, which owns its own range.*/
+    Combos,
+    CapsWordTrigger, Autoshift,
+    keyRoleManager,
     LEDControl, KeyboardFocus, DynamicMacros,
     /*SideFlash,*/ Focus, MouseKeys, OneShot, LayerFocus,
     HostPowerManagement,
     /*Dygma base plugin*/
     BaseDygma,
     /*Keyboard API interface*/
-    KbdInterface
+    KbdInterface,
+    /*CapsWord shift — must follow KbdInterface, which looks its key table up by
+      the exact raw value and would miss a key carrying SHIFT_HELD*/
+    CapsWordShift
 );
 
 result_t kbdfal_ll_base_init( void )

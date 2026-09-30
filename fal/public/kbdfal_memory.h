@@ -34,6 +34,9 @@ extern "C" {
         KBDMEM_ITEM_TYPE_QUKEYS,
         KBDMEM_ITEM_TYPE_SUPERKEY,
         KBDMEM_ITEM_TYPE_MACROS,
+        KBDMEM_ITEM_TYPE_AUTOSHIFT,
+        KBDMEM_ITEM_TYPE_CAPSWORD,
+        KBDMEM_ITEM_TYPE_COMBOS,
     } kbdmem_item_type_t;
 
 #ifdef __cplusplus
