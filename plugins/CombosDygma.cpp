@@ -88,12 +88,21 @@ bool CombosDygma::comboAppliesToActiveLayer(const combo_entry_t &combo) const
   return combo.layer == Layer.mostRecent();
 }
 
-/* A member position must hold an ordinary key.
+/* Can the key at a member position take part in a combo?
  *
- * Bazecor is supposed to prevent assigning a SuperKey, Qukey, OverlayKey or
- * Autoshift key to a combo member, but the firmware validates it too -- an old
- * blob would otherwise build a combo on top of a key whose own plugin also
- * wants to own the event, and the two would fight over it.
+ * Qukeys, Autoshift and CapsWord keys can. This plugin runs first in the
+ * chain, so it decides before any of them sees the press: on a match their
+ * plugin never sees the member at all, and on no match the buffered press is
+ * re-emitted and reaches them as an ordinary press, just one match window
+ * late. Two details make that hold, both in onKeyswitchEvent(): a release
+ * inside the window is let through after the flush, and Qukeys replays are
+ * never buffered.
+ *
+ * SuperKeys and OverlayKeys are still refused. The SuperKeys timeline counts
+ * taps and interruptions against real press times and has not been validated
+ * behind a buffer; an OverlayKey is not a key to type. Bazecor is supposed to
+ * prevent assigning them, but an old blob would otherwise build a combo on top
+ * of them.
  *
  * Checking the resolved key rather than the stored config is deliberate: it
  * follows layer changes, which a static check at write time cannot. */
@@ -101,10 +110,8 @@ bool CombosDygma::positionAllowed(KeyAddr key_addr, Key mapped_key) const
 {
   uint16_t raw = mapped_key.getRaw();
 
-  if (raw >= ranges::DUM_FIRST && raw <= ranges::DUL_LAST) return false;              /* qukey    */
   if (raw >= ranges::DYNAMIC_SUPER_FIRST && raw <= ranges::DYNAMIC_SUPER_LAST) return false; /* superkey */
   if (raw >= ranges::OVERLAY_KEY && raw <= ranges::OVERLAY_HOLD) return false;        /* overlay  */
-  if (raw >= ranges::AUTOSHIFT_FIRST && raw <= ranges::AUTOSHIFT_LAST) return false;  /* autoshift */
 
   UNUSED(key_addr);
 
@@ -465,6 +472,20 @@ EventHandlerResult CombosDygma::onKeyswitchEvent(Key &mapped_key, KeyAddr key_ad
 
   /* --- collecting ----------------------------------------------------- */
 
+  /* A Qukeys replay is not a new press. Once Qukeys resolves a key it re-emits
+   * it as a toggle-on WITHOUT the INJECTED flag -- the qukey as its primary or
+   * alternate key, and whatever it queued behind it. By then the key may be
+   * physically up and out of `flushed_`, and a member position that holds a
+   * qukey on any layer resolves the replay to an ordinary key that passes
+   * positionAllowed(). Buffering it would hold the resolution back one match
+   * window and let the keys queued behind it overtake it: a home-row-mod roll
+   * `d` `a` came out as `a` `d`, and a qukey hold took two hold timeouts to
+   * produce its modifier. */
+  if (keyToggledOn(key_state) && keyRoleManager.isReplayingQueuedEvent())
+  {
+    return EventHandlerResult::OK;
+  }
+
   if (keyToggledOn(key_state))
   {
     if (isMemberPosition(key_addr.toInt()) && positionAllowed(key_addr, mapped_key))
@@ -493,15 +514,25 @@ EventHandlerResult CombosDygma::onKeyswitchEvent(Key &mapped_key, KeyAddr key_ad
     return EventHandlerResult::OK;
   }
 
-  /* Holds and releases of buffered members: keep swallowing them until the
+  /* Holds and releases of buffered members: keep swallowing the holds until the
    * buffer resolves one way or the other. A release means the chord is over,
-   * so flush what we have -- the release itself then arrives on the next
-   * scan for an already-flushed key. */
+   * so flush what we have and then let the release itself through.
+   *
+   * The scanner reports a toggle-off exactly once, so swallowing it would lose
+   * it for good. An ordinary key does not notice -- the report is rebuilt every
+   * cycle and the key drops out of it anyway -- but Qukeys and Autoshift decide
+   * tap versus hold on that toggle-off. Without it a qukey tapped faster than
+   * the window came out as its modifier, and an Autoshift key as the capital.
+   *
+   * The press was re-emitted just above, so this is the physical release of a
+   * flushed key: clear its mark here, as the flushed-key path would. */
   if (state_ == State::COLLECTING && isBuffered(key_addr))
   {
     if (keyToggledOff(key_state))
     {
       flushBuffer();
+      addrFlagSet(flushed_, key_addr, false);
+      return EventHandlerResult::OK;
     }
 
     return EventHandlerResult::EVENT_CONSUMED;
