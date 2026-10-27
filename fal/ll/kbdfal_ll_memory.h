@@ -32,7 +32,7 @@ extern "C" {
 
     result_t kbdfal_ll_memory_init( const kbdmem_config_t * p_config );
 
-    result_t kbdfal_ll_memory_item_request( kbdmem_item_type_t item_type, const void ** pp_item );
+    result_t kbdfal_ll_memory_item_request( const void ** pp_item, uint16_t item_size );
     result_t kbdfal_ll_memory_data_save( const void * p_mem_target, const void * p_data, uint16_t data_len );
 
 #ifdef __cplusplus

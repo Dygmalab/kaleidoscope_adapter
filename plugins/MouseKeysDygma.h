@@ -28,18 +28,6 @@ namespace kaleidoscope {
 namespace plugin {
 class MouseKeys_ : public kaleidoscope::Plugin {
  public:
-
-  typedef struct PACK
-  {
-      uint8_t speed;
-      uint16_t speedDelay;
-      uint8_t accelSpeed;
-      uint16_t accelDelay;
-      uint8_t wheelSpeed;
-      uint16_t wheelDelay;
-      uint8_t speedLimit;
-  } MouseKeys_config_t;
-
   MouseKeys_(void) {}
 
   static void setWarpGridSize(uint8_t grid_size);
@@ -55,6 +43,17 @@ class MouseKeys_ : public kaleidoscope::Plugin {
   EventHandlerResult onKeyswitchEvent(Key &mappedKey, KeyAddr key_addr, uint8_t keyState);
 
  private:
+  typedef struct PACK
+  {
+      uint8_t speed;
+      uint16_t speedDelay;
+      uint8_t accelSpeed;
+      uint16_t accelDelay;
+      uint8_t wheelSpeed;
+      uint16_t wheelDelay;
+      uint8_t speedLimit;
+  } MouseKeys_config_t;
+
   static const MouseKeys_config_t * p_MouseKeys_config;
 
   static uint8_t mouseMoveIntent;

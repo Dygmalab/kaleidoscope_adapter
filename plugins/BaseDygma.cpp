@@ -49,6 +49,11 @@ namespace plugin
         return RESULT_OK;
     }
 
+    result_t BaseDygma::key_data_add( kbdapi_side_type_t side_type, const uint8_t * p_data, uint32_t data_len )
+    {
+        return kaleidoscope::Runtime.device().key_data_add( side_type, p_data, data_len );
+    }
+
 } // namespace plugin
 } //  namespace kaleidoscope
 
