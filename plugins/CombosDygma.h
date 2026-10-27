@@ -79,6 +79,21 @@ class CombosDygma : public kaleidoscope::Plugin {
    * wrote this byte, so it reads back as the 0xFF erase pattern. */
   static constexpr uint8_t LAYOUT_VERSION = 2;
 
+ public:
+  CombosDygma(void) {}
+
+  EventHandlerResult onKeyswitchEvent(Key &mapped_key, KeyAddr key_addr, uint8_t key_state);
+  EventHandlerResult beforeReportingState();
+  EventHandlerResult onFocusEvent(const char *command);
+  EventHandlerResult onSetup();
+
+  /* Requests the configuration block. Called from the application after every
+   * pre-existing block has been requested, not from onSetup(): the allocation
+   * is sequential, so this keeps the block at the tail of the configuration
+   * image and leaves the layout of older images untouched. */
+  void reserve_storage( void );
+
+ private:
   typedef struct PACK
   {
       uint8_t  positions[MAX_MEMBERS];  /* KeyAddr::toInt(), 0xFF = unused   */
@@ -96,15 +111,6 @@ class CombosDygma : public kaleidoscope::Plugin {
       combo_entry_t combos[MAX_COMBOS];
   } combos_config_t;                    /* 326 B                             */
 
- public:
-  CombosDygma(void) {}
-
-  EventHandlerResult onKeyswitchEvent(Key &mapped_key, KeyAddr key_addr, uint8_t key_state);
-  EventHandlerResult beforeReportingState();
-  EventHandlerResult onFocusEvent(const char *command);
-  EventHandlerResult onSetup();
-
- private:
   enum class State : uint8_t {
     IDLE,        /* nothing buffered                                   */
     COLLECTING,  /* some members down, waiting for a match or timeout  */

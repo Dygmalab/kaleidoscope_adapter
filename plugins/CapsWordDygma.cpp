@@ -192,14 +192,14 @@ EventHandlerResult CapsWordTriggerDygma::onFocusEvent(const char *command)
   return EventHandlerResult::EVENT_CONSUMED;
 }
 
-EventHandlerResult CapsWordTriggerDygma::onSetup()
+void CapsWordTriggerDygma::reserve_storage( void )
 {
   result_t result = RESULT_ERR;
 
-  result = kbdfal_ll_memory_item_request( KBDMEM_ITEM_TYPE_CAPSWORD, (const void **)&p_capsword_config );
+  result = kbdfal_ll_memory_item_request( (const void **)&p_capsword_config, sizeof( capsword_config_t ) );
 
   CW_LOG("=== CapsWord plugin ALIVE (build " __DATE__ " " __TIME__ ") ===");
-  CW_LOG("onSetup: item_request=%d cfg_ptr=%d", (int)result, p_capsword_config != nullptr);
+  CW_LOG("reserve_storage: item_request=%d cfg_ptr=%d", (int)result, p_capsword_config != nullptr);
   ASSERT_DYGMA( result == RESULT_OK, "kbdfal_ll_memory_item_request failed" );
 
   /* Sanitize against the 0xFF pattern of erased flash: units upgrading from a
@@ -220,8 +220,6 @@ EventHandlerResult CapsWordTriggerDygma::onSetup()
   }
 
   UNUSED( result );
-
-  return EventHandlerResult::OK;
 }
 
 /****************************************************/

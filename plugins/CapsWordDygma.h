@@ -46,19 +46,6 @@ namespace plugin {
  */
 class CapsWordTriggerDygma : public kaleidoscope::Plugin {
  public:
-  typedef struct PACK
-  {
-      /* Deactivate after this long without a word character. 0 = never. */
-      uint16_t idle_timeout_ms;
-
-      /* 0 disables the feature. */
-      uint8_t  enabled;
-
-      /* Which non-alpha keys continue the word instead of ending it. */
-      uint8_t  continuation_flags;
-
-  } capsword_config_t;
-
   /* continuation_flags bits */
   static constexpr uint8_t CONTINUE_DIGITS    = 0x01;
   static constexpr uint8_t CONTINUE_DASH      = 0x02;  /* '-' and '_' */
@@ -76,7 +63,12 @@ class CapsWordTriggerDygma : public kaleidoscope::Plugin {
   EventHandlerResult onKeyswitchEvent(Key &mapped_key, KeyAddr key_addr, uint8_t key_state);
   EventHandlerResult beforeReportingState();
   EventHandlerResult onFocusEvent(const char *command);
-  EventHandlerResult onSetup();
+
+  /* Requests the configuration block. Called from the application after every
+   * pre-existing block has been requested, not from onSetup(): the allocation
+   * is sequential, so this keeps the block at the tail of the configuration
+   * image and leaves the layout of older images untouched. */
+  void reserve_storage( void );
 
   bool isActive(void) const { return active_; }
 
@@ -91,6 +83,19 @@ class CapsWordTriggerDygma : public kaleidoscope::Plugin {
  private:
   bool     active_           = false;
   uint32_t last_activity_ms_ = 0;
+
+  typedef struct PACK
+  {
+      /* Deactivate after this long without a word character. 0 = never. */
+      uint16_t idle_timeout_ms;
+
+      /* 0 disables the feature. */
+      uint8_t  enabled;
+
+      /* Which non-alpha keys continue the word instead of ending it. */
+      uint8_t  continuation_flags;
+
+  } capsword_config_t;
 
   const capsword_config_t * p_capsword_config = nullptr;
 

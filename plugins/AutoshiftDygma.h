@@ -40,25 +40,17 @@ namespace plugin {
  */
 class AutoshiftDygma : public kaleidoscope::Plugin {
  public:
-  typedef struct PACK
-  {
-      /* How long the key must be held to produce the shifted character. */
-      uint16_t hold_timeout_ms;
-
-      /* 0 disables the feature; keys then always emit their base character. */
-      uint8_t  enabled;
-
-      uint8_t  reserved;
-
-  } autoshift_config_t;
-
- public:
   AutoshiftDygma(void) {}
 
   EventHandlerResult onKeyswitchEvent(Key &mapped_key, KeyAddr key_addr, uint8_t key_state);
   EventHandlerResult beforeReportingState();
   EventHandlerResult onFocusEvent(const char *command);
-  EventHandlerResult onSetup();
+
+  /* Requests the configuration block. Called from the application after every
+   * pre-existing block has been requested, not from onSetup(): the allocation
+   * is sequential, so this keeps the block at the tail of the configuration
+   * image and leaves the layout of older images untouched. */
+  void reserve_storage( void );
 
   /* Only keys with a distinct shifted form are eligible: letters, digits and
    * punctuation. Modifiers, F-keys, navigation and every SYNTHETIC/RESERVED
@@ -119,6 +111,18 @@ class AutoshiftDygma : public kaleidoscope::Plugin {
       bypassed_[offset >> 3] &= ~(1 << (offset & 7));
     }
   }
+
+  typedef struct PACK
+  {
+      /* How long the key must be held to produce the shifted character. */
+      uint16_t hold_timeout_ms;
+
+      /* 0 disables the feature; keys then always emit their base character. */
+      uint8_t  enabled;
+
+      uint8_t  reserved;
+
+  } autoshift_config_t;
 
   const autoshift_config_t * p_autoshift_config = nullptr;
 

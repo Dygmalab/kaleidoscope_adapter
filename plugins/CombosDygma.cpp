@@ -921,15 +921,20 @@ void CombosDygma::resetVolatileState()
 
 EventHandlerResult CombosDygma::onSetup()
 {
-  result_t result = RESULT_ERR;
-
   resetVolatileState();
 
-  result = kbdfal_ll_memory_item_request( KBDMEM_ITEM_TYPE_COMBOS, (const void **)&p_combos_config );
+  return EventHandlerResult::OK;
+}
+
+void CombosDygma::reserve_storage( void )
+{
+  result_t result = RESULT_ERR;
+
+  result = kbdfal_ll_memory_item_request( (const void **)&p_combos_config, sizeof( combos_config_t ) );
   ASSERT_DYGMA( result == RESULT_OK, "kbdfal_ll_memory_item_request failed" );
 
   CB_LOG("=== Combos plugin ALIVE (build " __DATE__ " " __TIME__ ") ===");
-  CB_LOG("onSetup: item_request=%d cfg_ptr=%d", (int)result, p_combos_config != nullptr);
+  CB_LOG("reserve_storage: item_request=%d cfg_ptr=%d", (int)result, p_combos_config != nullptr);
 
   /* A blob in another layout -- erased flash, or the 4-member layout of the
    * first version -- is wiped rather than misread: its entries would decode
@@ -976,13 +981,11 @@ EventHandlerResult CombosDygma::onSetup()
     cfgmem_count_save( 0 );
   }
 
-  CB_LOG("onSetup: count=%d window=%d idle=%d",
+  CB_LOG("reserve_storage: count=%d window=%d idle=%d",
          p_combos_config->combos_count, p_combos_config->match_window_ms,
          p_combos_config->idle_time_ms);
 
   UNUSED( result );
-
-  return EventHandlerResult::OK;
 }
 
 /****************************************************/

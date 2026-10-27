@@ -395,17 +395,17 @@ EventHandlerResult AutoshiftDygma::onFocusEvent(const char *command)
   return EventHandlerResult::EVENT_CONSUMED;
 }
 
-EventHandlerResult AutoshiftDygma::onSetup()
+void AutoshiftDygma::reserve_storage( void )
 {
   result_t result = RESULT_ERR;
 
-  result = kbdfal_ll_memory_item_request( KBDMEM_ITEM_TYPE_AUTOSHIFT, (const void **)&p_autoshift_config );
+  result = kbdfal_ll_memory_item_request( (const void **)&p_autoshift_config, sizeof( autoshift_config_t ) );
 
   /* Boot banner. If this line is missing from the serial log, the firmware
    * running on the board is not this build -- nothing else in this file will
    * appear either. */
   AS_LOG("=== Autoshift plugin ALIVE (build " __DATE__ " " __TIME__ ") ===");
-  AS_LOG("onSetup: item_request=%d cfg_ptr=%d", (int)result, p_autoshift_config != nullptr);
+  AS_LOG("reserve_storage: item_request=%d cfg_ptr=%d", (int)result, p_autoshift_config != nullptr);
   ASSERT_DYGMA( result == RESULT_OK, "kbdfal_ll_memory_item_request failed" );
 
   /* Sanitize against the 0xFF pattern of erased flash: units upgrading from a
@@ -422,8 +422,6 @@ EventHandlerResult AutoshiftDygma::onSetup()
   }
 
   UNUSED( result );
-
-  return EventHandlerResult::OK;
 }
 
 /****************************************************/
