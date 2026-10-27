@@ -26,15 +26,6 @@
 extern "C" {
 #endif
 
-    typedef enum
-    {
-        KBDMEM_ITEM_TYPE_KEYMAP = 1,
-        KBDMEM_ITEM_TYPE_MOUSEKEYS,
-        KBDMEM_ITEM_TYPE_KEYROLE,
-        KBDMEM_ITEM_TYPE_QUKEYS,
-        KBDMEM_ITEM_TYPE_SUPERKEY,
-        KBDMEM_ITEM_TYPE_MACROS,
-    } kbdmem_item_type_t;
 
 #ifdef __cplusplus
 }

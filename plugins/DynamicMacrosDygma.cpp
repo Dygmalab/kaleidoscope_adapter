@@ -338,7 +338,7 @@ namespace kaleidoscope
     {
       result_t result = RESULT_ERR;
 
-      result = kbdfal_ll_memory_item_request( KBDMEM_ITEM_TYPE_MACROS, (const void **)&p_macros_config );
+      result = kbdfal_ll_memory_item_request( (const void **)&p_macros_config, sizeof( macros_config_t ) );
       ASSERT_DYGMA( result == RESULT_OK, "kbdfal_ll_memory_item_request failed" );
 
       updateDynamicMacroCache();

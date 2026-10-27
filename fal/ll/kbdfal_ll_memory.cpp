@@ -40,14 +40,14 @@ static INLINE result_t _init( kbdfal_mem_t * p_mem, const kbdmem_config_t * p_co
     return RESULT_OK;
 }
 
-static result_t _item_request( kbdfal_mem_t * p_mem, kbdmem_item_type_t item_type, const void ** pp_item )
+static result_t _item_request( kbdfal_mem_t * p_mem, const void ** pp_item, uint16_t item_size )
 {
     if( p_mem->item_request_cb == NULL )
     {
         return RESULT_ERR;
     }
 
-    return p_mem->item_request_cb( p_mem->p_instance, item_type, pp_item );
+    return p_mem->item_request_cb( p_mem->p_instance, pp_item, item_size );
 }
 
 static result_t _data_save( kbdfal_mem_t * p_mem, const void * p_mem_target, const void * p_data, uint16_t data_len )
@@ -69,9 +69,9 @@ result_t kbdfal_ll_memory_init( const kbdmem_config_t * p_config )
     return _init( &kbdfal_mem, p_config );
 }
 
-result_t kbdfal_ll_memory_item_request( kbdmem_item_type_t item_type, const void ** pp_item )
+result_t kbdfal_ll_memory_item_request( const void ** pp_item, uint16_t item_size )
 {
-    return _item_request( &kbdfal_mem, item_type, pp_item );
+    return _item_request( &kbdfal_mem, pp_item, item_size );
 }
 
 result_t kbdfal_ll_memory_data_save( const void * p_mem_target, const void * p_data, uint16_t data_len )

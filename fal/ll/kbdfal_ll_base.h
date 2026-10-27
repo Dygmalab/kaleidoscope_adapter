@@ -33,6 +33,7 @@ extern "C" {
 extern result_t kbdfal_ll_base_init( void );
 extern result_t kbdfal_ll_base_key_report_enable( void );
 extern result_t kbdfal_ll_base_key_report_disable( void );
+extern result_t kbdfal_ll_base_key_data_add( kbdapi_side_type_t side_type, const uint8_t * p_data, uint32_t data_len );
 extern result_t kbdfal_ll_base_kbdif_set( kbdif_t * p_kbdif );
 
 #ifdef __cplusplus

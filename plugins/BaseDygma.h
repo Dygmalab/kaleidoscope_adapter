@@ -32,6 +32,7 @@ class BaseDygma : public Plugin
 
     result_t key_report_enable( void );
     result_t key_report_disable( void );
+    result_t key_data_add( kbdapi_side_type_t side_type, const uint8_t * p_data, uint32_t data_len );
 
   private:
 

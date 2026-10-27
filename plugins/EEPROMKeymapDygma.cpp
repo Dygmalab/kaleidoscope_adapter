@@ -34,7 +34,7 @@ EventHandlerResult EEPROMKeymap::onSetup() {
 
   progmem_layers_ = layer_count;        /* Save the number of default layers resolved at the compile time and stored in layer_count at the program start */
 
-  result = kbdfal_ll_memory_item_request( KBDMEM_ITEM_TYPE_KEYMAP, (const void **)&p_keymap_config );
+  result = kbdfal_ll_memory_item_request( (const void **)&p_keymap_config, sizeof( keymap_config_t ) );
   ASSERT_DYGMA( result == RESULT_OK, "kbdfal_ll_memory_item_request failed" );
 
   /* Check if the configuration is valid */
