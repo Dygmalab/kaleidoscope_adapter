@@ -37,6 +37,7 @@ extern "C" {
         KBDMEM_ITEM_TYPE_AUTOSHIFT,
         KBDMEM_ITEM_TYPE_CAPSWORD,
         KBDMEM_ITEM_TYPE_COMBOS,
+        KBDMEM_ITEM_TYPE_DEFAULTLAYER,
     } kbdmem_item_type_t;
 
 #ifdef __cplusplus

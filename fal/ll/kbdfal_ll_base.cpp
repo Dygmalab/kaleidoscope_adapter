@@ -22,6 +22,7 @@
 #include "BaseDygma.h"
 #include "CapsWordDygma.h"
 #include "CombosDygma.h"
+#include "DefaultLayerDygma.h"
 #include "DynamicMacrosDygma.h"
 #include "EEPROMKeymapDygma.h"
 #include "kbdfal_ll_base.h"
@@ -65,7 +66,7 @@ KALEIDOSCOPE_INIT_PLUGINS
     CapsWordTrigger, Autoshift,
     keyRoleManager,
     LEDControl, KeyboardFocus, DynamicMacros,
-    /*SideFlash,*/ Focus, MouseKeys, OneShot, LayerFocus,
+    /*SideFlash,*/ Focus, MouseKeys, OneShot, LayerFocus, DefaultLayer,
     HostPowerManagement,
     /*Dygma base plugin*/
     BaseDygma,
