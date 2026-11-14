@@ -24,6 +24,7 @@
 #include "CombosDygma.h"
 #include "DynamicMacrosDygma.h"
 #include "EEPROMKeymapDygma.h"
+#include "GraveEscapeDygma.h"
 #include "kbdfal_ll_base.h"
 #include "KbdInterface.h"
 #include "LEDControlDygma.h"
@@ -66,6 +67,9 @@ KALEIDOSCOPE_INIT_PLUGINS
     LEDControl, DynamicMacros,
     /*SideFlash,*/ Focus, MouseKeys, OneShot, LayerFocus,
     HostPowerManagement,
+    /*Grave Escape -- after keyRoleManager so pending qukeys resolve first, and
+      after OneShot so its report snapshot includes one-shot modifiers*/
+    GraveEscape,
     /*Dygma base plugin*/
     BaseDygma,
     /*Keyboard API interface*/
