@@ -67,9 +67,8 @@ KALEIDOSCOPE_INIT_PLUGINS
     LEDControl, DynamicMacros,
     /*SideFlash,*/ Focus, MouseKeys, OneShot, LayerFocus,
     HostPowerManagement,
-    /*Grave Escape -- after keyRoleManager so pending qukeys resolve first, after
-      OneShot so its modifier snapshot includes one-shot modifiers, and before
-      KbdInterface, which needs the final Key_Escape / Key_Backtick*/
+    /*Grave Escape -- after keyRoleManager so pending qukeys resolve first, and
+      after OneShot so its report snapshot includes one-shot modifiers*/
     GraveEscape,
     /*Dygma base plugin*/
     BaseDygma,

@@ -15,20 +15,76 @@
  */
 
 #include "GraveEscapeDygma.h"
+#include "OneShotDygma.h"
 
 #include "kaleidoscope/keyswitch_state.h"
+#include "kaleidoscope/layers.h"
 
 #include <string.h>
 
 namespace kaleidoscope {
 namespace plugin {
 
-static bool modifierActive(Key left, Key right)
+namespace {
+
+struct Mods
+{
+  bool shift;
+  bool gui;
+};
+
+/* Modifier keys physically held right now, as mapped in the live keymap. */
+Mods physicalMods(void)
+{
+  Mods mods = { false, false };
+
+  for (auto key_addr : KeyAddr::all())
+  {
+    if (!Runtime.device().isKeyswitchPressed(key_addr))
+    {
+      continue;
+    }
+
+    Key key = Layer.lookup(key_addr);
+
+    if (key.getFlags() & (SYNTHETIC | RESERVED))
+    {
+      continue;
+    }
+
+    if (key == Key_LeftShift || key == Key_RightShift)
+    {
+      mods.shift = true;
+    }
+    else if (key == Key_LeftGui || key == Key_RightGui)
+    {
+      mods.gui = true;
+    }
+  }
+
+  return mods;
+}
+
+Mods oneShotMods(void)
+{
+  return {
+    ::OneShot.isModifierActive(Key_LeftShift) || ::OneShot.isModifierActive(Key_RightShift),
+    ::OneShot.isModifierActive(Key_LeftGui) || ::OneShot.isModifierActive(Key_RightGui),
+  };
+}
+
+/* Modifiers in the HID report currently being built. */
+Mods reportMods(void)
 {
   auto &keyboard = Runtime.hid().keyboard();
 
-  return keyboard.isModifierKeyActive(left) || keyboard.isModifierKeyActive(right);
+  return {
+    keyboard.isModifierKeyActive(Key_LeftShift) || keyboard.isModifierKeyActive(Key_RightShift),
+    keyboard.isModifierKeyActive(Key_LeftGui) || keyboard.isModifierKeyActive(Key_RightGui),
+  };
 }
+
+}  // namespace
 
 void GraveEscapeDygma::stateSet(uint8_t *bits, uint8_t i, bool on)
 {
@@ -44,26 +100,14 @@ void GraveEscapeDygma::stateSet(uint8_t *bits, uint8_t i, bool on)
 
 bool GraveEscapeDygma::shouldSendGrave(void) const
 {
-  /* The snapshot covers the previous report. Modifiers handled earlier in the
-   * current scan are already in the report being built, so look there too:
-   * otherwise a Shift pressed in the same cycle as this key would be missed. */
-  bool shift = shift_active_ || modifierActive(Key_LeftShift, Key_RightShift);
-  bool gui   = gui_active_   || modifierActive(Key_LeftGui, Key_RightGui);
-  bool ctrl  = ctrl_active_  || modifierActive(Key_LeftControl, Key_RightControl);
-  bool alt   = alt_active_   || modifierActive(Key_LeftAlt, Key_RightAlt);
+  Mods physical = physicalMods();
+  Mods one_shot = oneShotMods();
+  Mods report   = reportMods();
 
-  if (GRAVE_ESC_CTRL_OVERRIDE && ctrl)
-  {
-    return false;
-  }
+  bool shift = physical.shift || one_shot.shift || report.shift || injected_shift_;
+  bool gui   = physical.gui   || one_shot.gui   || report.gui   || injected_gui_;
 
-  if (GRAVE_ESC_ALT_OVERRIDE && alt)
-  {
-    return false;
-  }
-
-  return (!GRAVE_ESC_SHIFT_OVERRIDE && shift) ||
-         (!GRAVE_ESC_GUI_OVERRIDE && gui);
+  return shift || gui;
 }
 
 EventHandlerResult GraveEscapeDygma::onKeyswitchEvent(Key &mapped_key, KeyAddr key_addr, uint8_t key_state)
@@ -73,11 +117,24 @@ EventHandlerResult GraveEscapeDygma::onKeyswitchEvent(Key &mapped_key, KeyAddr k
     return EventHandlerResult::OK;
   }
 
-  /* Events without a physical location (superkey actions, macros) can't be
-   * tracked per key, so each one is decided on its own. */
+  /* Events without a location (dynamic macros) share one slot: a macro presses
+   * and releases a key in order, so the release reuses the press's choice and
+   * never leaves the other key behind in the report. */
   if (!key_addr.isValid())
   {
-    mapped_key = shouldSendGrave() ? Key_Backtick : Key_Escape;
+    if (keyToggledOn(key_state) || !unlocated_decided_)
+    {
+      unlocated_decided_ = true;
+      unlocated_grave_   = shouldSendGrave();
+    }
+
+    mapped_key = unlocated_grave_ ? Key_Backtick : Key_Escape;
+
+    if (keyToggledOff(key_state))
+    {
+      unlocated_decided_ = false;
+    }
+
     return EventHandlerResult::OK;
   }
 
@@ -86,8 +143,7 @@ EventHandlerResult GraveEscapeDygma::onKeyswitchEvent(Key &mapped_key, KeyAddr k
   /* Decide on a fresh toggle-on, or if the key shows up already held without
    * one. A second toggle-on in the same cycle is the timeline's duplicate
    * delivery and keeps the choice. Re-deciding on later toggle-ons, rather
-   * than trusting decided_, also recovers from a release that never arrived
-   * (e.g. a side disconnecting mid-press). */
+   * than trusting decided_, also recovers from a release that never arrived. */
   bool fresh_press = keyToggledOn(key_state) && !stateGet(seen_this_cycle_, i);
 
   if (fresh_press || !stateGet(decided_, i))
@@ -113,10 +169,16 @@ EventHandlerResult GraveEscapeDygma::onKeyswitchEvent(Key &mapped_key, KeyAddr k
 
 EventHandlerResult GraveEscapeDygma::beforeReportingState()
 {
-  shift_active_ = modifierActive(Key_LeftShift, Key_RightShift);
-  gui_active_   = modifierActive(Key_LeftGui, Key_RightGui);
-  ctrl_active_  = modifierActive(Key_LeftControl, Key_RightControl);
-  alt_active_   = modifierActive(Key_LeftAlt, Key_RightAlt);
+  /* Remember only the modifiers in this report that the live checks in
+   * shouldSendGrave() can't see on their own. Physically held keys and
+   * one-shots are always read live, so a stale copy of them can never make
+   * the next press pick ` after they have been released. */
+  Mods report   = reportMods();
+  Mods physical = physicalMods();
+  Mods one_shot = oneShotMods();
+
+  injected_shift_ = report.shift && !physical.shift && !one_shot.shift;
+  injected_gui_   = report.gui   && !physical.gui   && !one_shot.gui;
 
   memset(seen_this_cycle_, 0, sizeof(seen_this_cycle_));
 
