@@ -48,9 +48,21 @@ static constexpr uint8_t HID_ALPHA_LAST      = 0x1D;  /* 'z' */
 static constexpr uint8_t HID_DIGIT_FIRST     = 0x1E;  /* '1' */
 static constexpr uint8_t HID_DIGIT_LAST      = 0x27;  /* '0' */
 static constexpr uint8_t HID_BACKSPACE       = 0x2A;
-static constexpr uint8_t HID_MINUS           = 0x2D;  /* '-' / '_' */
+static constexpr uint8_t HID_MINUS           = 0x2D;  /* '-' / '_' on US, UK... */
+static constexpr uint8_t HID_SLASH           = 0x38;  /* '-' / '_' on ES, DE, IT, PT, Nordic... */
+static constexpr uint8_t HID_KEYPAD_MINUS    = 0x56;
 static constexpr uint8_t HID_MODIFIER_FIRST  = 0xE0;
 static constexpr uint8_t HID_MODIFIER_LAST   = 0xE7;
+
+/* Hyphenated and snake_case words are one word, so a dash never ends CapsWord.
+ *
+ * The keyboard does not know the layout of the host, so every position that is
+ * a dash on a common layout counts. The price is that on a US layout '/' and
+ * '?' do not end the word either; the space after them still does. */
+static bool isDash(uint8_t keycode)
+{
+  return keycode == HID_MINUS || keycode == HID_SLASH || keycode == HID_KEYPAD_MINUS;
+}
 
 /****************************************************/
 /*                  CapsWord trigger                */
@@ -324,9 +336,9 @@ EventHandlerResult CapsWordShiftDygma::onKeyswitchEvent(Key &mapped_key, KeyAddr
   {
     continues = (continuation & CapsWordTriggerDygma::CONTINUE_DIGITS) != 0;
   }
-  else if (keycode == HID_MINUS)
+  else if (isDash(keycode))
   {
-    continues = (continuation & CapsWordTriggerDygma::CONTINUE_DASH) != 0;
+    continues = true;
   }
   else if (keycode == HID_BACKSPACE)
   {

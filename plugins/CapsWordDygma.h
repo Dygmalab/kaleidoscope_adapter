@@ -61,7 +61,10 @@ class CapsWordTriggerDygma : public kaleidoscope::Plugin {
 
   /* continuation_flags bits */
   static constexpr uint8_t CONTINUE_DIGITS    = 0x01;
-  static constexpr uint8_t CONTINUE_DASH      = 0x02;  /* '-' and '_' */
+  static constexpr uint8_t CONTINUE_DASH      = 0x02;  /* No longer consulted: '-' and '_'
+                                                        * always continue the word. Kept so
+                                                        * the stored value and the Focus
+                                                        * command stay compatible. */
   static constexpr uint8_t CONTINUE_BACKSPACE = 0x04;
 
   static constexpr uint16_t DEFAULT_IDLE_TIMEOUT_MS = 5000;
